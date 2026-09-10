@@ -1,5 +1,6 @@
 """Run with OpenHands' Python. The only agent tool executes inside Docker."""
 import argparse
+import inspect
 import json
 import os
 from pathlib import Path
@@ -9,12 +10,27 @@ import sys
 sys.path = [p for p in sys.path if Path(p).resolve() != Path(__file__).resolve().parent]
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from harness.sandbox import Sandbox
+from harness.adapters.repository import system_prompt
 
 
-from pydantic import Field
-from openhands.sdk import Action, Observation, Agent, Conversation, TextContent, Tool, ToolDefinition
+from pydantic import Field, PrivateAttr
+from openhands.sdk import Action, Observation, Agent, AgentContext, Conversation, TextContent, Tool, ToolDefinition
 from openhands.sdk.llm import LLM
 from openhands.sdk.tool import ToolExecutor, register_tool
+
+
+class MeasuredAgent(Agent):
+    _step_calls: int = PrivateAttr(default=0)
+
+    @property
+    def prompt_dir(self):
+        # SDK defaults derive this from the subclass module, which has no templates.
+        return str(Path(inspect.getfile(Agent)).parent / "prompts")
+
+    def step(self, *args, **kwargs):
+        self._step_calls += 1
+        return super().step(*args, **kwargs)
+
 
 class ShellAction(Action):
     command: str = Field(max_length=20_000, description="POSIX shell command inside the isolated repository container")
@@ -60,22 +76,23 @@ def main():
         global ACTIVE_SANDBOX, ACTIVE_OUTPUT
         ACTIVE_SANDBOX, ACTIVE_OUTPUT = sandbox, output
         register_tool(RepositoryShell.name, RepositoryShell)
-        agent = Agent(llm=LLM(model=req["model"], api_key=os.environ["OPENAI_API_KEY"], usage_id="peca-repository"),
+        agent = MeasuredAgent(llm=LLM(model=req["model"], api_key=os.environ["OPENAI_API_KEY"], usage_id="peca-repository"),
                       tools=[Tool(name=RepositoryShell.name)], tool_concurrency_limit=1,
-                      system_prompt="You are a coding agent completing a C/C++ repository task. "
-                      "Use the isolated repository shell. Implement the task, run available tests, and finish. "
-                      "Do not seek benchmark answers or hidden tests. Do not access the network.")
+                      agent_context=AgentContext(system_message_suffix=system_prompt(req.get("language", "C/C++"))))
         def record(event):
             with (output / "events.jsonl").open("a") as f:
                 f.write(event.model_dump_json() + "\n")
         conversation = Conversation(agent=agent, workspace=str(output), callbacks=[record], max_iteration_per_run=req.get("max_iterations", 20))
         conversation.send_message(req["prompt"])
-        conversation.run()
-        metrics = conversation.conversation_stats.get_combined_metrics()
-        result = {"execution_status": str(conversation.state.execution_status.value),
-                  "image_id": sandbox.image_id, "tool_surface": [RepositoryShell.name],
-                  "metrics": metrics.model_dump(mode="json")}
-        (output / "result.json").write_text(json.dumps(result, indent=2) + "\n")
+        try:
+            conversation.run()
+        finally:
+            metrics = conversation.conversation_stats.get_combined_metrics()
+            result = {"execution_status": str(conversation.state.execution_status.value),
+                      "image_id": sandbox.image_id, "tool_surface": [RepositoryShell.name],
+                      "agent_step_calls": agent._step_calls,
+                      "metrics": metrics.model_dump(mode="json")}
+            (output / "result.json").write_text(json.dumps(result, indent=2) + "\n")
 
 
 if __name__ == "__main__":

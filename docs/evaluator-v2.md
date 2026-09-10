@@ -4,9 +4,9 @@
 `qualified-v2` variant makes two scoped development corrections. Its name is a
 version label; only recorded repeated reference results establish task qualification.
 This is a PECA evaluator variant, not an official upstream benchmark score.
-The [milestone report](ast-milestone-report.md) records task 910 qualifying in three
-repetitions and task 1065 remaining unqualified. The ASLR variant is diagnostic;
-it did not resolve MemorySanitizer startup instability.
+Run fresh repeated qualification before using a task for scoring. Historical
+qualification reports and raw results have been removed. The ASLR variant is
+diagnostic; it must not be assumed to resolve MemorySanitizer startup instability.
 
 For task 910, only the developer test `CheckProofingIntersection` is corrected:
 creation failure returns zero, and successful creation/deletion returns one,
@@ -25,7 +25,7 @@ relaxing isolation. Results describe this controlled sanitizer environment.
 
 Every result records the evaluator revision, evaluator implementation hash,
 correction IDs, image ID and candidate hash. Build failures now retain `config.log`
-when available. Earlier reports and raw artifacts remain unchanged.
+when available.
 
 ## Repeated qualification
 

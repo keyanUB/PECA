@@ -67,17 +67,9 @@ Acceptance rules, mandatory checks, and repair budgets must be fixed by PECA's
 experiment configuration, not decided by the advisor. Held-out benchmark evaluation
 remains separate from the harness's own acceptance decision.
 
-## Initial verification — 2026-09-10
+## Verification
 
-The 30-test suite covers legacy responses, installed CLI aliases, real stdio/HTTP
-MCP calls, context bounds and provenance, obligation references, and bounded
-model-output correction. A live stdio request using
-`policy-advisor-mcp/examples/security-context.json` returned six SCPs and three
-advisory obligations from `gpt-5.6-luna` in one attempt. The caller's unknown
-symlink assumption remained unknown; every obligation remained unverified.
-
-Response ID: `resp_05a155cf05f47ac3016aa2d8f9c2c487d29cd7540fd262a92d`.
-Local response: `.artifacts/context-obligations-verification/response.json`.
-This verifies protocol and schema operation, not completeness of threat analysis
-or a measured improvement in secure generation. No new benchmark experiment or
-agent-level end-to-end run was performed for this extension.
+The MCP tests cover legacy responses, CLI aliases, stdio/HTTP calls, context bounds
+and provenance, obligation references, and bounded model-output correction.
+See the [MCP verification commands](../policy-advisor-mcp/README.md#verification)
+for fresh checks. Historical verification reports and raw responses were removed.

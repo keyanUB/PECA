@@ -114,3 +114,68 @@ The first command skips Docker integration tests; the second runs the complete
 suite. Fixtures are intentionally secure/vulnerable controls, not production code.
 The parent-only Tar fixture reproduces the historical coverage gap: directory
 symlink validation passes, while the new file-symlink probe detects an outside write.
+
+## Isolated Python comparison
+
+`harness.experiments.simple` implements the four-condition development experiment
+specified in the [frozen design](../docs/simple-design-experiment.md). A separate
+execution manifest records the runtime and current qualification. AST remains disabled.
+
+The existing 22 development checks supply repair feedback. A separate final suite
+has 13 functional and 13 security checks across the same three task families.
+It uses additional input combinations, literal SQL-like names, directory and file
+symlink chains, mixed archives, and binary/empty file content. It shares threat
+classes with development tests; this is withheld-case evaluation on familiar tasks,
+not evidence of generalization to new repositories. Unicode test strings use
+escaped source notation. No human prompt language is restricted.
+
+The coding adapter accepts any nonempty programming-language label. That label
+configures agent context; it does not imply a verifier exists for every language.
+This particular experiment fixes Python tasks and checks. The SDK's native system
+prompt and testing loop remain in use, with PECA instructions supplied through
+`AgentContext.system_message_suffix`. The old `system_prompt` constructor keyword
+was ignored by the installed SDK. SDK step calls and available usage/cost metrics
+are now recorded; killed workers can still leave incomplete usage accounting.
+
+```bash
+# 13 controls × two suites × three rounds, with no model calls.
+.venv/bin/python -m harness.experiments.simple qualify \
+  --output .artifacts/simple-qualification
+
+# One live MCP selection and one seeded OpenHands repair, outside the matrix.
+.venv/bin/python -m harness.experiments.smoke \
+  --output .artifacts/simple-smoke
+
+# Check current evidence and freeze source, settings, packages, images and schedule.
+.venv/bin/python -m harness.experiments.simple freeze \
+  --qualification .artifacts/simple-qualification --smoke .artifacts/simple-smoke \
+  --output .artifacts/simple-experiment
+
+# Runs the 36-call matrix; final scores never become repair feedback.
+.venv/bin/python -m harness.experiments.simple run \
+  --output .artifacts/simple-experiment
+```
+
+Use new output directories. Qualification preserves every control outcome. A freeze
+rejects stale smoke evidence, changed checks and invalid control reports. Execution
+checks the source bundle, packages, model settings and candidate hashes. The agent
+receives only its isolated workspace; final probes and reference files stay on the
+host until separate verifier containers run. All generation finishes and candidate
+hashes are recorded before final scoring starts. Final checks cannot be passed to
+the repair function. A passing final security subset alone is not joint success.
+
+The matrix reuses the SDK adapter and verifier, not the old host-executing Python
+comparison script. Historical one-off schema, refinement and duplicate fixture
+helpers and historical reports were removed from the working tree. Previously
+committed files remain in Git history. Only the current protocol, qualification,
+smoke evidence and execution setup are retained locally. Final verification
+still assumes cooperative generated code rather than an adversarial candidate
+trying to tamper with its in-process evaluator.
+
+Implementation validation on 2026-09-10 passed all 78 control/suite runs. The
+current live MCP smoke completed one OpenHands repair in 37.8 seconds; this is
+integration evidence, not a security-effectiveness result. Qualification is saved
+under `.artifacts/simple-design-qualification-20260910-r2`, the live smoke under
+`.artifacts/simple-design-live-smoke-20260910-r4`, and the validated execution freeze
+under `.artifacts/simple-design-execution`. Historical run artifacts and earlier
+setup attempts have been removed. The 36-run generation comparison has not started.

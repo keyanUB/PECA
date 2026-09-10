@@ -35,20 +35,31 @@ def obligation_results(bindings, checks):
 
 
 class DockerVerifier:
-    def __init__(self, image="python:3.12-slim", docker="docker"):
+    def __init__(self, image="python:3.12-slim", docker="docker", *, suite="development"):
         self.image = image
         self.docker = docker
+        if suite not in ("development", "final"):
+            raise ValueError("Unknown trusted suite")
+        self.suite = suite
+        self.specs, self.fingerprint = for_family, fingerprint
+        self.probe_path = Path(__file__).with_name("probes.py")
+        if suite == "final":
+            from harness.experiments.final_registry import for_family as final_specs, fingerprint as final_fingerprint
+            self.specs, self.fingerprint = final_specs, final_fingerprint
+            self.probe_path = Path(__file__).parents[1] / "experiments/final_probes.py"
 
     def verify(self, task, candidate, output: Path, bindings=()):
         if candidate.task_id != task.task_id:
             raise ValueError("Candidate task ID does not match task")
+        if self.suite == "final" and bindings:
+            raise ValueError("Final checks cannot be used as obligation bindings")
         validate_bindings(task.family, bindings)
-        specs = for_family(task.family)  # All baseline checks always run.
+        specs = self.specs(task.family)  # All checks always run within the selected trusted suite.
         output = output.resolve()
         output.mkdir(parents=True, exist_ok=False)
-        registry_hash = fingerprint()
+        registry_hash = self.fingerprint()
         (output / "candidate.py").write_bytes(candidate.source)
-        environment = {"backend": "docker", "requested_image": self.image,
+        environment = {"backend": "docker", "suite": self.suite, "requested_image": self.image,
                        "host_platform": platform.platform(), "network": "none",
                        "read_only": True, "memory_mb": 256, "cpus": 1, "pids_limit": 64}
         checks = []
@@ -71,7 +82,7 @@ class DockerVerifier:
                 source = root / "candidate.py"
                 probe = root / "probes.py"
                 source.write_bytes(candidate.source)
-                probe.write_bytes(Path(__file__).with_name("probes.py").read_bytes())
+                probe.write_bytes(self.probe_path.read_bytes())
                 source.chmod(0o444)
                 probe.chmod(0o444)
                 command = [self.docker, "run", "--rm", "--pull=never", "--name", container,
@@ -130,7 +141,7 @@ class DockerVerifier:
                     checks.append(CheckResult(spec.id, spec.version, candidate.sha256,
                         "passed" if item["passed"] else "failed", spec.kind,
                         str(item.get("detail", ""))[:2000], "execution.log"))
-                if fingerprint() != registry_hash:
+                if self.fingerprint() != registry_hash:
                     raise RuntimeError("Verifier implementation changed during execution")
         except (OSError, ValueError, RuntimeError, subprocess.SubprocessError, KeyError, TypeError) as exc:
             checks = [CheckResult(s.id, s.version, candidate.sha256, failure_status, s.kind,
@@ -140,6 +151,10 @@ class DockerVerifier:
                 # Kill the container, not just the Docker client, on timeout/error.
                 try:
                     subprocess.run([self.docker, "rm", "-f", container], capture_output=True, timeout=15)
+                    remaining = subprocess.run([self.docker, "ps", "-aq", "--filter", "name=^/" + container + "$"],
+                                               capture_output=True, text=True, timeout=15, check=True)
+                    if remaining.stdout.strip():
+                        environment["cleanup_error"] = "Verifier container remains after cleanup"
                 except (OSError, subprocess.SubprocessError):
                     environment["cleanup_error"] = "Could not confirm Docker container removal"
                 if process.poll() is None:

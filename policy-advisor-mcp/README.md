@@ -192,14 +192,10 @@ Review the resulting diff before replacing a snapshot used in experiments.
 
 ## Verification
 
-See the [latest fixed-integration comparison](SECURITY_COMPARISON_FIXED.md) for
-the new 12-run experiment, supplementary vulnerability findings, and protocol
-compliance audit. Raw `.artifacts/` evidence is local and excluded from Git;
-the report provides commands to reproduce the experiment.
-
-See [SECURITY_COMPARISON.md](SECURITY_COMPARISON.md) for the 12-run paired pilot,
-independent security probes, and the discovered OpenHands MCP adapter mismatch.
-The successful smoke test alone does not demonstrate improved security.
+See the [current harness experiment](../harness/README.md#isolated-python-comparison)
+for qualification and generation-comparison instructions. Historical experiment
+reports and raw results were removed during repository cleanup. A successful smoke
+test alone does not demonstrate improved security.
 
 ```bash
 cd policy-advisor-mcp

@@ -58,28 +58,29 @@ The [OpenHands controller](docs/controller-design.md) connects policy guidance,
 generation, independent acceptance checks, and bounded external repair.
 The [repository harness](docs/repository-harness.md) adds isolated OpenHands SDK
 execution, replayable source patches, and a pinned SecRepoBench development pilot.
-See the [pilot report](docs/repository-pilot-report.md) for results and qualification limits.
-The [AST milestone report](docs/ast-milestone-report.md) covers optional Clang
-context for the advisor and repeated qualification with a versioned evaluator.
+See [optional AST context](docs/ast-context.md) and the
+[versioned evaluator](docs/evaluator-v2.md) for their scope and usage.
+The [simpler-design experiment protocol](docs/simple-design-experiment.md) freezes
+the next four-condition development comparison with AST disabled, including
+separate final evaluation and the required execution gates.
+The [isolated Python comparison runner](harness/README.md#isolated-python-comparison)
+now provides separate final checks, control qualification and execution freezing.
 
 The MCP package is now `policy-advisor-mcp`, with server name `policy-advisor`.
 Existing users should follow the [rename migration guide](policy-advisor-mcp/MIGRATION.md).
 
 - [policy-advisor installation and tools](policy-advisor-mcp/README.md)
 - [Cross-client integration status](policy-advisor-mcp/integrations/README.md)
-- [Latest baseline/SCP comparison](policy-advisor-mcp/SECURITY_COMPARISON_FIXED.md)
-- [OpenHands failed-case retest](policy-advisor-mcp/OPENHANDS_RETEST.md)
 
-The latest comparison completed 12 generations. Primary security checks passed
-21/22 for baseline and 22/22 for SCP guidance, but a supplementary probe found
-a vulnerability in one implementation in each arm. These results do not establish
-a general security improvement. Codex, Claude Code, and SWE-agent integrations
-have not yet been verified end to end.
+The next comparison has not started. General security improvement has not been
+established. Codex, Claude Code, and SWE-agent integrations have not yet been
+verified end to end.
 
-Raw experiment traces, local profiles, generated workspaces, and virtual environments
-are excluded from Git. Report links into `.artifacts/` refer to local evidence and
-will not resolve in a fresh clone. The reports and evaluation scripts are included;
-follow the latest report to produce a new set of artifacts.
+Historical reports and raw experiment results have been removed from the working
+tree. The benchmark source checkout, client configuration and current experiment's
+qualification, smoke evidence and execution setup remain local under `.artifacts/`.
+Those files and virtual environments are excluded from Git. Use the harness
+instructions to create fresh evidence in a new clone.
 
 The OWASP data retains its upstream attribution and license; see
 [the data notice](policy-advisor-mcp/src/policy_selector/data/NOTICE.md).

@@ -1,7 +1,5 @@
 # OpenHands compatibility entrypoint
 
-Verified on the four previous unsuccessful guided cases: four actual MCP calls succeeded, with 14/14 functional and 16/16 security checks passing. See the [retest report](../../OPENHANDS_RETEST.md).
-
 `compat_entrypoint.py` repairs the installed OpenHands 1.13.0 MCP-to-Responses
 schema mismatch in the running Python process. It builds the Responses function
 schema from the same MCP input schema used by the Chat Completions conversion and
@@ -37,15 +35,14 @@ Run the schema regression check with the Python interpreter containing OpenHands
 It checks schema agreement, required flat arguments, rejection of wrapped arguments,
 and idempotent application, without an LLM request.
 
-Repeat the previous failing cases using their exact saved prompts:
+To generate fresh live integration evidence, run the current harness smoke:
 
 ```bash
-.venv/bin/python policy-advisor-mcp/evaluation/retest_openhands.py \
-  --previous .artifacts/security-comparison-20260909 \
-  --output .artifacts/openhands-retest-new
+.venv/bin/python -m harness.experiments.smoke \
+  --output .artifacts/simple-smoke
 ```
 
-This creates fresh workspaces/profiles, calls the MCP through OpenHands, and applies
-the original external functional/security probes to the generated code. It includes
-the three prior no-code runs and the first archive run that had a security failure.
-It preserves the original experiment and never manually edits generated code.
+This checks controller-to-MCP integration and a seeded repair through the isolated
+OpenHands SDK adapter. It does not exercise stock CLI MCP tool calling. The schema
+self-test above specifically checks this compatibility entrypoint. Historical
+retest artifacts have been removed.

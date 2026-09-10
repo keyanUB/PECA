@@ -10,16 +10,26 @@ import uuid
 from harness.sandbox import DEFAULT_IMAGE
 
 
+def system_prompt(language="C/C++"):
+    if not isinstance(language, str) or not language.strip():
+        raise ValueError("Agent task language must be a nonempty string")
+    return (f"You are a coding agent completing a {language} repository task. "
+            "Use the isolated repository shell. Implement the task, run available tests, and finish. "
+            "Do not seek benchmark answers or hidden tests. Do not access the network.")
+
+
 class RepositoryAgent:
-    def __init__(self, python, model="openai/gpt-5.4-mini", image=DEFAULT_IMAGE):
+    def __init__(self, python, model="openai/gpt-5.4-mini", image=DEFAULT_IMAGE, *, language="C/C++"):
+        system_prompt(language)  # Validate the label without restricting programming languages.
         self.python, self.model, self.image = str(python), model, image
+        self.language = language
 
     def run(self, workspace, output, prompt, *, timeout=240, iterations=20):
         output.mkdir(parents=True, exist_ok=False)
         name = "peca-agent-" + uuid.uuid4().hex
         request = {"workspace": str(workspace.resolve()), "output": str((output / "sdk").resolve()),
                    "prompt": prompt, "model": self.model, "image": self.image,
-                   "container_name": name, "max_iterations": iterations}
+                   "container_name": name, "max_iterations": iterations, "language": self.language}
         request_path = output / "request.json"
         request_path.write_text(json.dumps(request, indent=2) + "\n")
         started = time.monotonic()

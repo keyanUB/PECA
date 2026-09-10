@@ -5,6 +5,25 @@ MCP alongside the original source. The coding model remains `gpt-5.4-mini` and
 the advisor remains `gpt-5.6-luna`. Existing MCP calls do not require AST evidence.
 This feature supplies context; it does not verify security obligations.
 
+## Development decision
+
+AST remains an optional evidence source, disabled by default. Its effectiveness
+evaluation is deferred until the core pipeline is ready. Further AST expansion
+is not a prerequisite for completing that pipeline.
+
+The immediate priority is reliable task/repository intake, policy selection,
+agent generation, independent verification, bounded repair and reproducible
+reporting. Pipeline readiness requires an end-to-end run on qualified benchmark
+tasks, with incomplete agent work and evaluator failures distinguished from
+functional and security results. Checks remain independent of whether the advisor
+selects any policies.
+
+Once that pipeline is ready, compare text-only context with text plus AST under
+comparable budgets. Measure obligation quality, functional/security outcomes and
+total cost, including extraction, build preparation and model usage. Until then,
+the AST milestone establishes integration and traceability, not improved security
+of generated code.
+
 ## Extractor
 
 `harness.analysis` uses Clang's Python bindings inside a separate Docker image.
