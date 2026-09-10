@@ -3,7 +3,8 @@
 Policy Advisor accepts optional security context and proposes verification
 obligations. Steps 1–3 now also provide [typed harness contracts and a trusted
 Docker verifier](../harness/README.md) for three single-file Python task families.
-A harness controller, agent adapter, and acceptance engine are not implemented yet.
+The [OpenHands controller](controller-design.md) now adds generation/resumption,
+bounded repair, and scoped acceptance. Repository-level integration remains future work.
 
 ## Responsibilities
 
@@ -59,7 +60,8 @@ the family baseline. Read-only container mounts protect probe files. Failed
 checks, infrastructure errors, timeouts, and unverified mappings are distinct.
 The current verifier does not resist malicious in-process result forgery; see
 its documented threat-model limitation. Final benchmark tests must not supply
-repair feedback. The next increment is the agent adapter and bounded controller.
+repair feedback. The agent adapter and bounded controller are now implemented;
+see their execution limitations before running them.
 
 Acceptance rules, mandatory checks, and repair budgets must be fixed by PECA's
 experiment configuration, not decided by the advisor. Held-out benchmark evaluation

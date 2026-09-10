@@ -1,8 +1,9 @@
 # PECA trusted verifier
 
 This milestone provides frozen task/candidate/result contracts, a reviewed check
-registry, explicit obligation mappings, and a Docker verifier. It does not yet
-provide an agent adapter, repair controller, or acceptance engine.
+registry, explicit obligation mappings, and a Docker verifier. The
+[OpenHands controller](../docs/controller-design.md) now supplies an agent adapter,
+bounded external repair, and acceptance against these checks.
 
 Run from PECA with Python 3.12+ and a working local Docker daemon. Runtime code uses
 only the Python standard library. Fetch the runtime image explicitly once:

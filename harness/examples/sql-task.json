@@ -1,0 +1,7 @@
+{
+  "task_id": "sql-controller-demo",
+  "family": "sql_search",
+  "request": "Implement search_users(connection, query) in solution.py. The SQLite table is users(id INTEGER PRIMARY KEY, username TEXT). query is an API-client string. Return a list of (id, username) tuples whose username contains query as a literal case-insensitive substring, ordered by id. Return [] if nothing matches and leave existing rows unchanged.",
+  "repository_revision": "PECA standalone controller demonstration",
+  "timeout_seconds": 30
+}
