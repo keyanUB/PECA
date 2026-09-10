@@ -31,7 +31,7 @@ def implementation_hashes():
             for p in sorted(root.rglob("*.py")) if "tests" not in p.parts}
 
 
-def freeze(benchmark, output, task_ids, image=DEFAULT_IMAGE):
+def freeze(benchmark, output, task_ids, image=DEFAULT_IMAGE, ast_context=False):
     """Must run before any candidate generation, refusing to overwrite a protocol."""
     output.mkdir(parents=True, exist_ok=False)
     tasks = [benchmark.task(t) for t in task_ids]
@@ -43,6 +43,8 @@ def freeze(benchmark, output, task_ids, image=DEFAULT_IMAGE):
     rng.shuffle(runs)
     image_id = subprocess.check_output(["docker", "image", "inspect", image, "--format", "{{.Id}}"], text=True).strip()
     protocol = {"version": 1, "stage": "development_feasibility", "benchmark_revision": REVISION,
+                "evaluator_revision": benchmark.evaluator_revision,
+                "ast_context": ast_context,
                 "tasks": tasks, "runs": runs, "coding_model": "openai/gpt-5.4-mini", "advisor_model": "gpt-5.6-luna",
                 "agent_image_id": image_id, "harness_sha256": implementation_hashes(),
                 "budget": {"agent_seconds": 300, "max_iterations": 30, "max_external_repairs": 1,
@@ -62,6 +64,9 @@ def freeze(benchmark, output, task_ids, image=DEFAULT_IMAGE):
                 "project_split": {"development": excluded, "validation": projects[:len(projects)//2],
                                   "held_out": projects[len(projects)//2:]},
                 "held_out_rule": "No held-out runs until adapters, independent security checks and power analysis are ready; preregister a separate confirmatory protocol."}
+    if ast_context:
+        from harness.analysis.extractor import IMAGE
+        protocol['ast_image_id'] = subprocess.check_output(['docker', 'image', 'inspect', IMAGE, '--format', '{{.Id}}'], text=True).strip()
     save(output / "protocol.json", protocol)
     digest = hashlib.sha256((output / "protocol.json").read_bytes()).hexdigest()
     (output / "protocol.sha256").write_text(digest + "\n")
@@ -78,14 +83,16 @@ def load_protocol(output):
     return protocol
 
 
-def select_guidance(task, snapshot):
+def select_guidance(task, snapshot, program_evidence=None):
     from policy_selector.client import request
     # Explicit bounded snapshot, never reference implementations or benchmark metadata.
     content = dict((p, d) for p, d, _ in snapshot.files)[task["target"]].decode()
     arguments = {"task": task["request"], "files": [{"path": task["target"], "content": content}],
                  "propose_obligations": True}
+    if program_evidence is not None:
+        arguments['program_evidence'] = program_evidence
     result = asyncio.run(asyncio.wait_for(request("call", "select_for_repository", arguments), 150))
-    if result.get("isError") or not result.get("selected"):
+    if result.get("isError") or "selected" not in result:
         raise ValueError("Required policy selection unavailable")
     return result
 
@@ -127,8 +134,11 @@ def run_one(benchmark, task, snapshot, condition, output, agent, guidance, budge
             dev = benchmark.evaluate(task, frozen, output / f"development-{index}", phase="development")
             result["rounds"].append({"agent": generated, "development": dev, "changed_files": snapshot.changes(candidate),
                                       "candidate_sha256": hashlib.sha256(data).hexdigest()})
-            result["status"] = generated["status"]
-            if dev["status"] != "failed" or generated["status"] != "ok" or index == 1 or not repair_arm:
+            result['completion_present'] = b'// <MASK>' not in data
+            result["status"] = generated["status"] if result['completion_present'] else 'incomplete'
+            if not result['completion_present']:
+                result['detail'] = 'Completion marker remains in the submitted target'
+            if dev["status"] != "failed" or result["status"] != "ok" or index == 1 or not repair_arm:
                 break
             feedback = (output / f"development-{index}" / "development.log").read_text()[-20_000:]
         if result["rounds"]:
@@ -148,12 +158,27 @@ def run_one(benchmark, task, snapshot, condition, output, agent, guidance, budge
 
 def run(benchmark, output, python, qualification_root):
     protocol = load_protocol(output)
+    if benchmark.evaluator_revision != protocol.get('evaluator_revision', 'upstream-v1'):
+        raise ValueError('Evaluator revision does not match frozen protocol')
     agent = RepositoryAgent(python, protocol["coding_model"], protocol["agent_image_id"])
     prepared = {}
     for task in protocol["tasks"]:
         q = qualification_root / task["id"]
-        refs = {name: json.loads((q / name / "result.json").read_text()) for name in ("sec-final", "vul-final", "sec-development")}
-        valid = qualified(refs["sec-final"], refs["vul-final"], refs["sec-development"])
+        repeated = q / 'qualification.json'
+        if repeated.exists():
+            qualification = json.loads(repeated.read_text())
+            rounds = qualification['rounds']
+            if len(rounds) < 2:
+                raise ValueError('Repeated qualification requires at least two rounds')
+            valid = all(qualified(r['secure_security'], r['vulnerable_security'], r['secure_functional']) for r in rounds)
+            reference_sets = [{'sec-final': r['secure_security'], 'vul-final': r['vulnerable_security'],
+                               'sec-development': r['secure_functional']} for r in rounds]
+        else:
+            reference_sets = [{name: json.loads((q / name / "result.json").read_text()) for name in ("sec-final", "vul-final", "sec-development")}]
+            if benchmark.evaluator_revision != 'upstream-v1':
+                raise ValueError('Corrected evaluator requires repeated qualification')
+            valid = qualified(*[reference_sets[0][n] for n in ('sec-final', 'vul-final', 'sec-development')])
+        refs = reference_sets[-1]
         # Prepare independently; qualification artifacts and gold files never enter the workspace.
         snapshot, image = benchmark.prepare(task)
         task_root = output / task["id"]
@@ -161,17 +186,28 @@ def run(benchmark, output, python, qualification_root):
         save(task_root / "source-manifest.json", {"sha256": snapshot.sha256, "files": snapshot.manifest, "image_id": image})
         save(task_root / "qualification.json", {"qualified": valid, "references": refs})
         try:
-            guidance = select_guidance(task, snapshot)
+            ast_evidence = None
+            if protocol.get('ast_context'):
+                from harness.analysis.benchmark_context import analyze_benchmark
+                ast_evidence = analyze_benchmark(task, snapshot, task_root / 'analysis', image=protocol['ast_image_id'])
+            guidance = select_guidance(task, snapshot, ast_evidence)
             save(task_root / "guidance.json", guidance)
         except Exception as exc:
             guidance = None
             save(task_root / "guidance-error.json", {"type": type(exc).__name__, "detail": str(exc)[:1000]})
-        for name, reference in refs.items():
-            variant = "vul" if name == "vul-final" else "sec"
-            expected = hashlib.sha256(benchmark.source_variant(task, variant)).hexdigest()
-            if reference.get("candidate_sha256") != expected or reference.get("image_id") != image or reference.get("task_id") != task["id"]:
-                raise ValueError("Reference qualification provenance mismatch")
-        prepared[task["id"]] = task, snapshot, guidance, valid, refs["sec-development"]["status"] == "passed"
+        for references in reference_sets:
+            for name, reference in references.items():
+                variant = "vul" if name == "vul-final" else "sec"
+                expected = hashlib.sha256(benchmark.source_variant(task, variant)).hexdigest()
+                if (reference.get("candidate_sha256") != expected or reference.get("image_id") != image
+                        or reference.get("task_id") != task["id"]
+                        or reference.get('evaluator_revision', 'upstream-v1') != benchmark.evaluator_revision):
+                    raise ValueError("Reference qualification provenance mismatch")
+                if benchmark.evaluator_revision != 'upstream-v1':
+                    from harness.benchmarks.evaluator import fingerprint as evaluator_fingerprint
+                    if reference.get('evaluator_sha256') != evaluator_fingerprint():
+                        raise ValueError('Reference evaluator implementation mismatch')
+        prepared[task["id"]] = task, snapshot, guidance, valid, all(r['sec-development']['status'] == 'passed' for r in reference_sets)
     results = []
     for item in protocol["runs"]:
         task, snapshot, guidance, valid, developer_valid = prepared[item["task_id"]]
@@ -198,8 +234,10 @@ def main():
     parser.add_argument("--tasks", nargs="+", default=["910", "1065"])
     parser.add_argument("--openhands-python", default=str(Path.home() / ".local/share/uv/tools/openhands/bin/python"))
     parser.add_argument("--qualification", type=Path)
+    parser.add_argument('--ast-context', action='store_true', help='Freeze optional Clang context extraction')
+    parser.add_argument('--evaluator', choices=('upstream-v1', 'qualified-v2'), default='upstream-v1')
     args = parser.parse_args()
-    benchmark = SecRepoBench(args.source)
+    benchmark = SecRepoBench(args.source, evaluator_revision=args.evaluator)
     if args.action == "qualify":
         args.output.mkdir(parents=True, exist_ok=False)
         for task_id in args.tasks:
@@ -214,7 +252,7 @@ def main():
             result = benchmark.evaluate(task, out / "sec.c", out / "sec-development", phase="development")
             print(task_id, "development", result["status"], flush=True)
     elif args.action == "freeze":
-        freeze(benchmark, args.output, args.tasks)
+        freeze(benchmark, args.output, args.tasks, ast_context=args.ast_context)
     else:
         if args.qualification is None:
             parser.error("--qualification is required for run")

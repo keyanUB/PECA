@@ -24,11 +24,12 @@ def bounded(command, timeout=120, limit=2_000_000):
 
 
 class Sandbox:
-    def __init__(self, image=DEFAULT_IMAGE, workspace=None, workdir="/workspace", user=None):
+    def __init__(self, image=DEFAULT_IMAGE, workspace=None, workdir="/workspace", user=None, control=None):
         self.image = image
         self.workspace = workspace
         self.workdir = workdir
         self.user = user
+        self.control = control
         self.name = "peca-repo-" + uuid.uuid4().hex
         self.image_id = None
         self.closed = False
@@ -49,6 +50,8 @@ class Sandbox:
             # ARVO build directories belong to a non-root image user. This capability
             # is confined to evaluation containers, which have no host mounts.
             cmd += ["--cap-add=DAC_OVERRIDE"]
+        if self.control is not None:
+            cmd += ["--mount", f"type=bind,src={self.control.resolve()},dst=/peca-control,readonly"]
         cmd += [self.image_id, "-c", "sleep infinity"]
         subprocess.run(cmd, check=True, capture_output=True, timeout=30)
         return self

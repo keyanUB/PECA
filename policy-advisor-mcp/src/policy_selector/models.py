@@ -87,3 +87,50 @@ class Obligation(StrictModel):
 
 class AdvisorySelection(Selection):
     obligations: list[Obligation] = Field(max_length=30)
+
+
+class ProgramFact(StrictModel):
+    id: str = Field(min_length=1, max_length=100)
+    kind: Literal['function', 'parameter', 'variable', 'call', 'operator', 'branch',
+                  'return', 'array_access', 'member_reference', 'caller']
+    name: str = Field(max_length=200)
+    type: str = Field(max_length=300)
+    function: str = Field(max_length=200)
+    detail: str = Field(max_length=400)
+    source: str = Field(min_length=1, max_length=500)
+    line: int = Field(ge=1)
+    byte_offset: int = Field(ge=0)
+    quote: str = Field(min_length=1, max_length=240)
+
+
+class ProgramEvidence(StrictModel):
+    schema_version: Literal[1]
+    producer: str = Field(min_length=1, max_length=100)
+    worker_sha256: str | None = Field(default=None, pattern=r'^[0-9a-f]{64}$')
+    repository_sha256: str = Field(pattern=r'^[0-9a-f]{64}$')
+    source_sha256: dict[str, str] = Field(min_length=1, max_length=40)
+    target_file: str = Field(min_length=1, max_length=500)
+    compiler_arguments: list[str] = Field(max_length=100)
+    image_id: str = Field(max_length=100)
+    compiler_version: str = Field(max_length=600)
+    parse_status: Literal['parsed', 'partial', 'failed']
+    facts: list[ProgramFact] = Field(max_length=80)
+    diagnostics: list[str] = Field(max_length=20)
+    limitations: list[str] = Field(max_length=20)
+
+
+class ReferencedDecision(Decision):
+    evidence: list[str] = Field(min_length=1, max_length=10, description='Supplied AST fact IDs or task; server resolves exact quotes')
+
+
+class ReferencedObligation(Obligation):
+    evidence: list[str] = Field(min_length=1, max_length=10, description='Supplied AST fact IDs or task')
+
+
+class ReferencedSelection(AdvisorySelection):
+    selected: list[ReferencedDecision]
+    obligations: list[ReferencedObligation] = Field(max_length=30)
+
+
+class RepositoryReferencedSelection(ReferencedSelection):
+    removed: list[Removal] = Field(max_length=0)

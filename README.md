@@ -59,6 +59,8 @@ generation, independent acceptance checks, and bounded external repair.
 The [repository harness](docs/repository-harness.md) adds isolated OpenHands SDK
 execution, replayable source patches, and a pinned SecRepoBench development pilot.
 See the [pilot report](docs/repository-pilot-report.md) for results and qualification limits.
+The [AST milestone report](docs/ast-milestone-report.md) covers optional Clang
+context for the advisor and repeated qualification with a versioned evaluator.
 
 The MCP package is now `policy-advisor-mcp`, with server name `policy-advisor`.
 Existing users should follow the [rename migration guide](policy-advisor-mcp/MIGRATION.md).

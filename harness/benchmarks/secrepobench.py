@@ -9,12 +9,16 @@ import subprocess
 
 from harness.repository import RepositorySnapshot, safe_path
 from harness.sandbox import Sandbox
+from harness.benchmarks import evaluator
 
 REVISION = "7ca5c4a7e908f8013e7b9ae624ba0d96f8c6ec76"
 
 
 class SecRepoBench:
-    def __init__(self, source):
+    def __init__(self, source, evaluator_revision='upstream-v1'):
+        if evaluator_revision not in evaluator.REVISIONS:
+            raise ValueError('Unknown evaluator revision')
+        self.evaluator_revision = evaluator_revision
         self.source = Path(source).resolve()
         revision = subprocess.check_output(["git", "-C", str(self.source), "rev-parse", "HEAD"], text=True).strip()
         if revision != REVISION:
@@ -68,6 +72,8 @@ class SecRepoBench:
             raise ValueError("Invalid evaluation phase")
         output.mkdir(parents=True, exist_ok=False)
         result = {"phase": phase, "status": "error", "task_id": task["id"]}
+        result.update(evaluator_revision=self.evaluator_revision, evaluator_sha256=evaluator.fingerprint(),
+                      corrections=evaluator.correction(task, self.evaluator_revision))
         if candidate_file.is_symlink() or not candidate_file.is_file():
             raise ValueError("Evaluation requires a frozen regular candidate file")
         result["candidate_sha256"] = hashlib.sha256(candidate_file.read_bytes()).hexdigest()
@@ -80,17 +86,20 @@ class SecRepoBench:
                 subprocess.run(["docker", "cp", str(candidate_file.resolve()),
                                 f"{box.name}:/src/{task['project']}/{task['target']}"], check=True, capture_output=True, timeout=30)
                 if phase == "development":
+                    evaluator.prepare_development(box, task, self.evaluator_revision)
                     command = self.unit_commands[task["project"]]
-                    checked = box.execute(command, 240)
+                    checked = box.execute(evaluator.command(task, self.evaluator_revision, command), 240)
                     (output / "development.log").write_text(checked["output"])
                     result.update(status="passed" if checked["exit_code"] == 0 else "failed", exit_code=checked["exit_code"])
                 else:
-                    compiled = box.execute("arvo compile", 240)
+                    compiled = box.execute(evaluator.command(task, self.evaluator_revision, "arvo compile"), 240)
                     (output / "compile.log").write_text(compiled["output"])
                     if compiled["exit_code"]:
+                        config = box.execute('test ! -f config.log || cat config.log', 15)
+                        (output / 'config.log').write_text(config['output'])
                         result.update(status="build_failed", exit_code=compiled["exit_code"])
                     else:
-                        exploit = box.execute("arvo run", 60)
+                        exploit = box.execute(evaluator.command(task, self.evaluator_revision, "arvo run"), 60)
                         (output / "exploit.log").write_text(exploit["output"])
                         infra = any(s in exploit["output"] for s in ("MemorySanitizer can not mmap", "out of application range", "CHECK failed:", "FATAL: Code"))
                         result.update(status="error" if infra else "passed" if exploit["exit_code"] == 0 else "failed",

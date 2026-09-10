@@ -6,7 +6,7 @@ from typing import Any
 from mcp.server.fastmcp import FastMCP
 
 from .catalog import Catalog
-from .models import CodeFile, PreviousPolicy, SecurityContext
+from .models import CodeFile, PreviousPolicy, SecurityContext, ProgramEvidence
 from .repository import collect_repository
 from .selector import Selector
 
@@ -37,7 +37,8 @@ def build_server(host="127.0.0.1", port=8765):
                                     file_paths: list[str] | None = None,
                                     files: list[CodeFile] | None = None,
                                     security_context: SecurityContext | None = None,
-                                    propose_obligations: bool = False) -> dict[str, Any]:
+                                    propose_obligations: bool = False,
+                                    program_evidence: ProgramEvidence | None = None) -> dict[str, Any]:
         """Analyze a task and incomplete repository.
 
         Choose exactly one: repository_path on the server filesystem, or files
@@ -45,6 +46,8 @@ def build_server(host="127.0.0.1", port=8765):
         Local paths must be within POLICY_SELECTOR_REPO_ROOT. file_paths filters
         local reads only. Snapshots support containers and remote clients without
         shared paths. Both modes are bounded and report partial coverage.
+        Optional program_evidence supplies source-bound structural observations;
+        it is advisory and never substitutes for independent security checks.
         """
         if (repository_path is None) == (files is None):
             raise ValueError("Provide exactly one of repository_path or files")
@@ -61,22 +64,26 @@ def build_server(host="127.0.0.1", port=8765):
         if not code:
             raise ValueError("No readable source files found in the repository selection")
         return await selector.select("repository", task, code, coverage=coverage,
-                                     security_context=security_context, propose_obligations=propose_obligations)
+                                     security_context=security_context, propose_obligations=propose_obligations,
+                                     program_evidence=program_evidence)
 
     @mcp.tool()
     async def refine_selection(task: str, generated_code: list[CodeFile],
                                previous_selection: list[PreviousPolicy],
                                security_context: SecurityContext | None = None,
-                               propose_obligations: bool = False) -> dict[str, Any]:
+                               propose_obligations: bool = False,
+                               program_evidence: ProgramEvidence | None = None) -> dict[str, Any]:
         """Reassess previous SCPs against generated code and the original task.
 
         Pass each previous policy_id with its rationale/guidance. Results retain,
         add, or remove policies and assess implementation as satisfied/gap/uncertain.
+        Optional program_evidence must match the generated code, not an older snapshot.
         """
         if not generated_code or not any(f.content.strip() for f in generated_code):
             raise ValueError("Provide nonempty generated code for refinement")
         return await selector.select("refinement", task, generated_code, previous_selection,
-                                     security_context=security_context, propose_obligations=propose_obligations)
+                                     security_context=security_context, propose_obligations=propose_obligations,
+                                     program_evidence=program_evidence)
 
     return mcp
 
