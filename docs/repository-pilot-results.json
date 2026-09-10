@@ -1,0 +1,356 @@
+{
+  "protocol_sha256": "6a2082faf6b4294d6e6da458a24a52187ba5dc0cdd6db1d82491297be83b1c3f",
+  "benchmark_revision": "7ca5c4a7e908f8013e7b9ae624ba0d96f8c6ec76",
+  "stage": "development_feasibility",
+  "results": [
+    {
+      "task_id": "910",
+      "condition": "baseline",
+      "status": "incomplete",
+      "qualified": false,
+      "developer_status": "failed",
+      "hidden_status": "passed",
+      "candidate_sha256": "9a12ede7016872814e46c0d4d54d5f31d4803447e196d8783ef60a36a298290a",
+      "joint_pass": null,
+      "external_repairs": 0,
+      "external_repair_enabled": false,
+      "agent_seconds": 196.51,
+      "cleanup_confirmed": true,
+      "sdk_estimated_cost_usd": 0.1948896,
+      "prompt_tokens": 738696,
+      "completion_tokens": 23796,
+      "changed_files": [
+        "src/cmsio0.c",
+        "testbed/testcms2.c"
+      ]
+    },
+    {
+      "task_id": "1065",
+      "condition": "policy",
+      "status": "ok",
+      "qualified": false,
+      "developer_status": "passed",
+      "hidden_status": "build_failed",
+      "candidate_sha256": "e05a41048fc206393aae9ba45b81c8e2cf571635a12a297951e5d4f59737dddd",
+      "joint_pass": null,
+      "external_repairs": 0,
+      "external_repair_enabled": false,
+      "agent_seconds": 170.77,
+      "cleanup_confirmed": true,
+      "sdk_estimated_cost_usd": 0.158334,
+      "prompt_tokens": 626618,
+      "completion_tokens": 18685,
+      "changed_files": [
+        "src/funcs.c",
+        "tests/Makefile.am"
+      ]
+    },
+    {
+      "task_id": "1065",
+      "condition": "baseline",
+      "status": "incomplete",
+      "qualified": false,
+      "developer_status": "passed",
+      "hidden_status": "failed",
+      "candidate_sha256": "e05a41048fc206393aae9ba45b81c8e2cf571635a12a297951e5d4f59737dddd",
+      "joint_pass": null,
+      "external_repairs": 0,
+      "external_repair_enabled": false,
+      "agent_seconds": 172.31,
+      "cleanup_confirmed": true,
+      "sdk_estimated_cost_usd": 0.28200165,
+      "prompt_tokens": 1634531,
+      "completion_tokens": 16498,
+      "changed_files": [
+        "src/funcs.c"
+      ]
+    },
+    {
+      "task_id": "1065",
+      "condition": "verification",
+      "status": "incomplete",
+      "qualified": false,
+      "developer_status": "passed",
+      "hidden_status": "failed",
+      "candidate_sha256": "e05a41048fc206393aae9ba45b81c8e2cf571635a12a297951e5d4f59737dddd",
+      "joint_pass": null,
+      "external_repairs": 0,
+      "external_repair_enabled": true,
+      "agent_seconds": 157.15,
+      "cleanup_confirmed": true,
+      "sdk_estimated_cost_usd": 0.13385505,
+      "prompt_tokens": 339703,
+      "completion_tokens": 19746,
+      "changed_files": [
+        "src/funcs.c"
+      ]
+    },
+    {
+      "task_id": "910",
+      "condition": "full",
+      "status": "incomplete",
+      "qualified": false,
+      "developer_status": "failed",
+      "hidden_status": "passed",
+      "candidate_sha256": "5269092a5778046baa84d7fd40b89c34676f06d88bb4bda8f32078ef9939fe89",
+      "joint_pass": null,
+      "external_repairs": 0,
+      "external_repair_enabled": false,
+      "agent_seconds": 140.9,
+      "cleanup_confirmed": true,
+      "sdk_estimated_cost_usd": 0.15311295000000003,
+      "prompt_tokens": 680295,
+      "completion_tokens": 16873,
+      "changed_files": [
+        "src/cmsio0.c",
+        "testbed/testcms2.c"
+      ]
+    },
+    {
+      "task_id": "910",
+      "condition": "verification",
+      "status": "incomplete",
+      "qualified": false,
+      "developer_status": "failed",
+      "hidden_status": "passed",
+      "candidate_sha256": "0382300b8351cebeda813a5a6d5b70764fa55539a64693df8bd5f47e70468c82",
+      "joint_pass": null,
+      "external_repairs": 0,
+      "external_repair_enabled": false,
+      "agent_seconds": 132.28,
+      "cleanup_confirmed": true,
+      "sdk_estimated_cost_usd": 0.16399245,
+      "prompt_tokens": 951187,
+      "completion_tokens": 12158,
+      "changed_files": []
+    },
+    {
+      "task_id": "1065",
+      "condition": "full",
+      "status": "incomplete",
+      "qualified": false,
+      "developer_status": "passed",
+      "hidden_status": "build_failed",
+      "candidate_sha256": "e05a41048fc206393aae9ba45b81c8e2cf571635a12a297951e5d4f59737dddd",
+      "joint_pass": null,
+      "external_repairs": 0,
+      "external_repair_enabled": true,
+      "agent_seconds": 159.49,
+      "cleanup_confirmed": true,
+      "sdk_estimated_cost_usd": 0.13692375,
+      "prompt_tokens": 409149,
+      "completion_tokens": 18300,
+      "changed_files": [
+        "src/funcs.c"
+      ]
+    },
+    {
+      "task_id": "910",
+      "condition": "policy",
+      "status": "incomplete",
+      "qualified": false,
+      "developer_status": "failed",
+      "hidden_status": "passed",
+      "candidate_sha256": "b7da1efb7ec84089d63c5899d8284f315bbf937afb7e778dba931f8144977b36",
+      "joint_pass": null,
+      "external_repairs": 0,
+      "external_repair_enabled": false,
+      "agent_seconds": 165.13,
+      "cleanup_confirmed": true,
+      "sdk_estimated_cost_usd": 0.21004319999999999,
+      "prompt_tokens": 1017478,
+      "completion_tokens": 21711,
+      "changed_files": [
+        "src/cmsio0.c"
+      ]
+    }
+  ],
+  "guidance": {
+    "910": {
+      "model": "gpt-5.6-luna",
+      "response_model": "gpt-5.6-luna",
+      "selected_ids": [
+        "OWASP-SCP-b70eb3dca9b7",
+        "OWASP-SCP-075cbe9df568",
+        "OWASP-SCP-2a771bf04b83"
+      ],
+      "usage": {
+        "input_tokens": 36872,
+        "input_tokens_details": {
+          "cache_write_tokens": 36869,
+          "cached_tokens": 0
+        },
+        "output_tokens": 1488,
+        "output_tokens_details": {
+          "reasoning_tokens": 125
+        },
+        "total_tokens": 38360
+      },
+      "coverage": {
+        "bytes_read": 58002,
+        "files_read": [
+          "src/cmsio0.c"
+        ],
+        "mode": "client_snapshot",
+        "note": "Only client-supplied files were analyzed; repository completeness is unknown.",
+        "partial": true
+      },
+      "obligations": [
+        {
+          "advisory": true,
+          "applicability_conditions": [
+            "Assume profile tag directory contents are caller- or file-provided and therefore untrusted.",
+            "Assume IsTypeSupported is the intended allow-list for the descriptor."
+          ],
+          "context_ids": [],
+          "evidence": [
+            {
+              "quote": "Check if the tag is supported.",
+              "source": "task"
+            },
+            {
+              "quote": "if (!IsTypeSupported(TagDescriptor, BaseType)) goto Error;",
+              "source": "src/cmsio0.c"
+            }
+          ],
+          "id": "tag-input-01",
+          "limitations": [
+            "The supplied file does not include plugin implementations or instrumentation for proving that ReadPtr was not invoked."
+          ],
+          "policy_ids": [
+            "OWASP-SCP-075cbe9df568"
+          ],
+          "requirement": "Reject a tag whose declared type is not supported by its tag descriptor before obtaining or invoking a type handler.",
+          "suggested_checks": [
+            {
+              "description": "Exercise cmsReadTag with a profile whose tag contains a base type absent from the descriptor's SupportedTypes list and confirm it returns NULL without invoking ReadPtr.",
+              "expected_evidence": "A test result showing rejection and no unsupported type-handler invocation.",
+              "method": "behavioral_test"
+            }
+          ],
+          "verification_status": "unverified"
+        },
+        {
+          "advisory": true,
+          "applicability_conditions": [
+            "Assume the base type header has a fixed size known by the implementation.",
+            "Assume TagSize originates from the profile tag directory and may be malformed."
+          ],
+          "context_ids": [],
+          "evidence": [
+            {
+              "quote": "Change the tag size to account for the tag's base type header.",
+              "source": "task"
+            },
+            {
+              "quote": "TagSize   = Icc -> TagSizes[n];",
+              "source": "src/cmsio0.c"
+            },
+            {
+              "quote": "Icc -> TagPtrs[n] = LocalTypeHandler.ReadPtr(&LocalTypeHandler, io, &ElemCount, TagSize);",
+              "source": "src/cmsio0.c"
+            }
+          ],
+          "id": "tag-input-02",
+          "limitations": [
+            "The exact base-type header size and _cmsReadTypeBase behavior are not present in the supplied snapshot.",
+            "No behavioral or static checks have been run."
+          ],
+          "policy_ids": [
+            "OWASP-SCP-b70eb3dca9b7",
+            "OWASP-SCP-2a771bf04b83"
+          ],
+          "requirement": "Reject malformed tag data when the declared tag size is smaller than the base-type header, and pass only the remaining bounded payload size to the type reader.",
+          "suggested_checks": [
+            {
+              "description": "Exercise cmsReadTag with a tag size equal to, smaller than, and larger than the base-type header size; confirm the undersized case is rejected and the valid case reads only the payload after the header.",
+              "expected_evidence": "Test results demonstrating safe rejection of undersized tags and the expected payload length supplied to ReadPtr.",
+              "method": "behavioral_test"
+            },
+            {
+              "description": "Review the masked implementation to confirm the size check precedes header-size subtraction and that no unsigned underflow can reach ReadPtr.",
+              "expected_evidence": "A code-review record identifying the guard, subtraction, and bounded ReadPtr argument.",
+              "method": "static_analysis"
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    },
+    "1065": {
+      "model": "gpt-5.6-luna",
+      "response_model": "gpt-5.6-luna",
+      "selected_ids": [
+        "OWASP-SCP-c995ab783029"
+      ],
+      "usage": {
+        "input_tokens": 25585,
+        "input_tokens_details": {
+          "cache_write_tokens": 6491,
+          "cached_tokens": 19091
+        },
+        "output_tokens": 720,
+        "output_tokens_details": {
+          "reasoning_tokens": 84
+        },
+        "total_tokens": 26305
+      },
+      "coverage": {
+        "bytes_read": 13303,
+        "files_read": [
+          "src/funcs.c"
+        ],
+        "mode": "client_snapshot",
+        "note": "Only client-supplied files were analyzed; repository completeness is unknown.",
+        "partial": true
+      },
+      "obligations": [
+        {
+          "advisory": true,
+          "applicability_conditions": [
+            "Assume rx contains the compiled expression used by this wrapper.",
+            "The task requires the underlying regexec result to be returned directly."
+          ],
+          "context_ids": [],
+          "evidence": [
+            {
+              "quote": "The result is stored in pmatch, up to nmatch entries, with execution flags",
+              "source": "task"
+            },
+            {
+              "quote": "Return the result of regexec function call.",
+              "source": "task"
+            },
+            {
+              "quote": "protected int\nfile_regexec(file_regex_t *rx, const char *str, size_t nmatch,\n    regmatch_t* pmatch, int eflags)",
+              "source": "src/funcs.c"
+            }
+          ],
+          "id": "OBL-REGEXEC-001",
+          "limitations": [
+            "Checks are proposed only and have not been run.",
+            "This obligation does not establish that callers provide valid pointers or that the broader regular-expression lifecycle is correct."
+          ],
+          "policy_ids": [
+            "OWASP-SCP-c995ab783029"
+          ],
+          "requirement": "file_regexec must invoke regexec with the compiled expression and supplied string, match count, match buffer, and execution flags, then return regexec's result.",
+          "suggested_checks": [
+            {
+              "description": "Review file_regexec to confirm that it directly calls regexec with the compiled expression and all five supplied arguments, and returns that value unchanged.",
+              "expected_evidence": "The completed function propagates the regexec return value without custom matching, translation, or fallback behavior.",
+              "method": "static_analysis"
+            },
+            {
+              "description": "Compare file_regexec with direct regexec behavior for matching and nonmatching inputs, including populated match entries and execution flags.",
+              "expected_evidence": "The wrapper produces the same return code and match results as regexec.",
+              "method": "behavioral_test"
+            }
+          ],
+          "verification_status": "unverified"
+        }
+      ]
+    }
+  },
+  "qualified_runs": 0
+}

@@ -56,6 +56,9 @@ The [harness contracts and trusted verifier](harness/README.md) provide Docker-b
 functional/security checks for SQL queries, document reads, and archive extraction.
 The [OpenHands controller](docs/controller-design.md) connects policy guidance,
 generation, independent acceptance checks, and bounded external repair.
+The [repository harness](docs/repository-harness.md) adds isolated OpenHands SDK
+execution, replayable source patches, and a pinned SecRepoBench development pilot.
+See the [pilot report](docs/repository-pilot-report.md) for results and qualification limits.
 
 The MCP package is now `policy-advisor-mcp`, with server name `policy-advisor`.
 Existing users should follow the [rename migration guide](policy-advisor-mcp/MIGRATION.md).
