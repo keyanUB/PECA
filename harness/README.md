@@ -168,7 +168,7 @@ The matrix reuses the SDK adapter and verifier, not the old host-executing Pytho
 comparison script. Historical one-off schema, refinement and duplicate fixture
 helpers and historical reports were removed from the working tree. Previously
 committed files remain in Git history. Only the current protocol, qualification,
-smoke evidence and execution setup are retained locally. Final verification
+smoke evidence and current comparison results are retained locally. Final verification
 still assumes cooperative generated code rather than an adversarial candidate
 trying to tamper with its in-process evaluator.
 
@@ -178,4 +178,21 @@ integration evidence, not a security-effectiveness result. Qualification is save
 under `.artifacts/simple-design-qualification-20260910-r2`, the live smoke under
 `.artifacts/simple-design-live-smoke-20260910-r4`, and the validated execution freeze
 under `.artifacts/simple-design-execution`. Historical run artifacts and earlier
-setup attempts have been removed. The 36-run generation comparison has not started.
+setup attempts have been removed. All 36 generation runs and final evaluations
+are complete. The [results and case analysis](../docs/simple-design-results.md)
+report 7/9 baseline joint successes versus 9/9 in each harness condition, including
+one successful external repair. The small pilot does not establish general
+security improvement or an advantage for combining both harness components.
+
+Recompute the statistical tables and validate saved evidence without model calls:
+
+```bash
+.venv/bin/python -m scripts.analyze_simple_comparison \
+  .artifacts/simple-design-execution --report /tmp/peca-comparison-tables.md
+```
+
+This checks the frozen manifest, prompts, candidate hashes, and verifier reports.
+The committed report also includes a manually reviewed interpretation.
+The audit requires the frozen runtime's effective model metadata. If the SDK
+cannot fetch its price map and falls back to different bundled metadata, the
+model-settings fingerprint check can fail; restore network access and retry.

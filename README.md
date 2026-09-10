@@ -61,7 +61,7 @@ execution, replayable source patches, and a pinned SecRepoBench development pilo
 See [optional AST context](docs/ast-context.md) and the
 [versioned evaluator](docs/evaluator-v2.md) for their scope and usage.
 The [simpler-design experiment protocol](docs/simple-design-experiment.md) freezes
-the next four-condition development comparison with AST disabled, including
+the four-condition development comparison with AST disabled, including
 separate final evaluation and the required execution gates.
 The [isolated Python comparison runner](harness/README.md#isolated-python-comparison)
 now provides separate final checks, control qualification and execution freezing.
@@ -72,13 +72,16 @@ Existing users should follow the [rename migration guide](policy-advisor-mcp/MIG
 - [policy-advisor installation and tools](policy-advisor-mcp/README.md)
 - [Cross-client integration status](policy-advisor-mcp/integrations/README.md)
 
-The next comparison has not started. General security improvement has not been
-established. Codex, Claude Code, and SWE-agent integrations have not yet been
-verified end to end.
+The [completed 36-run comparison](docs/simple-design-results.md) found joint
+functional/security success in 7/9 baseline runs and 9/9 runs in each harness
+condition. Both baseline failures involved archive extraction through existing
+symlinks; one external repair succeeded. This is a small development pilot,
+not evidence of general security improvement. Codex, Claude Code, and SWE-agent
+integrations have not yet been verified end to end.
 
 Historical reports and raw experiment results have been removed from the working
 tree. The benchmark source checkout, client configuration and current experiment's
-qualification, smoke evidence and execution setup remain local under `.artifacts/`.
+qualification, smoke evidence and completed comparison remain local under `.artifacts/`.
 Those files and virtual environments are excluded from Git. Use the harness
 instructions to create fresh evidence in a new clone.
 
