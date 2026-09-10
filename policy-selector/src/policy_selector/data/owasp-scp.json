@@ -1,0 +1,1320 @@
+{
+  "source": {
+    "name": "OWASP Secure Coding Practices Quick Reference Guide",
+    "snapshot": "stable-en",
+    "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist",
+    "raw_url": "https://raw.githubusercontent.com/OWASP/www-project-secure-coding-practices-quick-reference-guide/master/stable-en/02-checklist/05-checklist.md",
+    "source_sha256": "e98358d4799454ca12c89e2d7501447499ffb5f999cf6ab3bbb3d1b9f49825d5",
+    "id_scheme": "PECA content-derived IDs, not official OWASP identifiers"
+  },
+  "policies": [
+    {
+      "category": "Input validation",
+      "text": "Conduct all input validation on a trusted system (server side not client side)",
+      "id": "OWASP-SCP-a3fa9f5c903f",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "Identify all data sources and classify them into trusted and untrusted",
+      "id": "OWASP-SCP-62aba82e7a6f",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "Validate all data from untrusted sources (databases, file streams, etc)",
+      "id": "OWASP-SCP-b70eb3dca9b7",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "Use a centralized input validation routine for the whole application",
+      "id": "OWASP-SCP-16d76c401f73",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "Specify character sets, such as UTF-8, for all input sources (canonicalization)",
+      "id": "OWASP-SCP-425e846a5f68",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "Encode input to a common character set before validating",
+      "id": "OWASP-SCP-58be5f987cdb",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "All validation failures should result in input rejection",
+      "id": "OWASP-SCP-19eaa7b6c955",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "If the system supports UTF-8 extended character sets and validate after UTF-8 decoding is completed",
+      "id": "OWASP-SCP-9dbca1572243",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "Validate all client provided data before processing",
+      "id": "OWASP-SCP-f090a6d73ef3",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "Verify that protocol header values in both requests and responses contain only ASCII characters",
+      "id": "OWASP-SCP-b1be390e8412",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "Validate data from redirects",
+      "id": "OWASP-SCP-ad70a66e9d33",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "Validate for expected data types using an \"allow\" list rather than a \"deny\" list",
+      "id": "OWASP-SCP-075cbe9df568",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "Validate data range",
+      "id": "OWASP-SCP-021e01beb98a",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "Validate data length",
+      "id": "OWASP-SCP-2a771bf04b83",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "If any potentially hazardous input must be allowed then implement additional controls",
+      "id": "OWASP-SCP-9742afe07244",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "If the standard validation routine cannot address some inputs then use extra discrete checks",
+      "id": "OWASP-SCP-911a8a92e33c",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Input validation",
+      "text": "Utilize canonicalization to address obfuscation attacks",
+      "id": "OWASP-SCP-a7346c058dcf",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#input-validation"
+    },
+    {
+      "category": "Output encoding",
+      "text": "Conduct all output encoding on a trusted system (server side not client side)",
+      "id": "OWASP-SCP-13c86bdc6170",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#output-encoding"
+    },
+    {
+      "category": "Output encoding",
+      "text": "Utilize a standard, tested routine for each type of outbound encoding",
+      "id": "OWASP-SCP-0d4602e6e943",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#output-encoding"
+    },
+    {
+      "category": "Output encoding",
+      "text": "Specify character sets, such as UTF-8, for all outputs",
+      "id": "OWASP-SCP-073da882a803",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#output-encoding"
+    },
+    {
+      "category": "Output encoding",
+      "text": "Contextually output encode all data returned to the client from untrusted sources",
+      "id": "OWASP-SCP-f311b79c50c2",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#output-encoding"
+    },
+    {
+      "category": "Output encoding",
+      "text": "Ensure the output encoding is safe for all target systems",
+      "id": "OWASP-SCP-9759d929e3b4",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#output-encoding"
+    },
+    {
+      "category": "Output encoding",
+      "text": "Contextually sanitize all output of un-trusted data to queries for SQL, XML, and LDAP",
+      "id": "OWASP-SCP-c8b7b900189b",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#output-encoding"
+    },
+    {
+      "category": "Output encoding",
+      "text": "Sanitize all output of untrusted data to operating system commands",
+      "id": "OWASP-SCP-65d8819975ee",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#output-encoding"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Require authentication for all pages and resources, except those specifically intended to be public",
+      "id": "OWASP-SCP-c3714d72c1bb",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "All authentication controls must be enforced on a trusted system",
+      "id": "OWASP-SCP-56db95fcfcae",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Establish and utilize standard, tested, authentication services whenever possible",
+      "id": "OWASP-SCP-fb8aafbf9070",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Use a centralized implementation for all authentication controls, including libraries that call external authentication services",
+      "id": "OWASP-SCP-86d52aada126",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Segregate authentication logic from the resource being requested and use redirection to and from the centralized authentication control",
+      "id": "OWASP-SCP-887a6c55d6b3",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "All authentication controls should fail securely",
+      "id": "OWASP-SCP-eef1c290106b",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "All administrative and account management functions must be at least as secure as the primary authentication mechanism",
+      "id": "OWASP-SCP-bce1e8155b12",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "If your application manages a credential store, use cryptographically strong one-way salted hashes",
+      "id": "OWASP-SCP-b183800b3872",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Password hashing must be implemented on a trusted system server side not client side)",
+      "id": "OWASP-SCP-60c6e3ea6208",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Validate the authentication data only on completion of all data input",
+      "id": "OWASP-SCP-2407634f9bac",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Authentication failure responses should not indicate which part of the authentication data was incorrect",
+      "id": "OWASP-SCP-e5c08305f29d",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Utilize authentication for connections to external systems that involve sensitive information or functions",
+      "id": "OWASP-SCP-2fefe279e0e6",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Authentication credentials for accessing services external to the application should be stored in a secure store",
+      "id": "OWASP-SCP-e4a3ea4b7fb9",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Use only HTTP POST requests to transmit authentication credentials",
+      "id": "OWASP-SCP-14509ee773eb",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Only send non-temporary passwords over an encrypted connection or as encrypted data",
+      "id": "OWASP-SCP-68de874aa922",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Enforce password complexity requirements established by policy or regulation",
+      "id": "OWASP-SCP-55c4e44958e7",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Enforce password length requirements established by policy or regulation",
+      "id": "OWASP-SCP-c61690c09094",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Password entry should be obscured on the user's screen",
+      "id": "OWASP-SCP-39fcd35e38b0",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Enforce account disabling after an established number of invalid login attempts",
+      "id": "OWASP-SCP-c87651a2ce57",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Password reset and changing operations require the same level of controls as account creation and authentication",
+      "id": "OWASP-SCP-8d2885256533",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Password reset questions should support sufficiently random answers",
+      "id": "OWASP-SCP-5c8d536fc2d0",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "If using email based resets, only send email to a pre-registered address with a temporary link/password",
+      "id": "OWASP-SCP-385239e5e146",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Temporary passwords and links should have a short expiration time",
+      "id": "OWASP-SCP-357d63a28000",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Enforce the changing of temporary passwords on the next use",
+      "id": "OWASP-SCP-4892b1e1ef4b",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Notify users when a password reset occurs",
+      "id": "OWASP-SCP-186a18c2f087",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Prevent password re-use",
+      "id": "OWASP-SCP-cc329d4f5d94",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Passwords should be at least one day old before they can be changed, to prevent attacks on password re-use",
+      "id": "OWASP-SCP-757b5131049c",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Enforce password changes based on requirements established in policy or regulation, with the time between resets administratively controlled",
+      "id": "OWASP-SCP-d7516cc9343e",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Disable \"remember me\" functionality for password fields",
+      "id": "OWASP-SCP-f051417cae0b",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "The last use (successful or unsuccessful) of a user account should be reported to the user at their next successful login",
+      "id": "OWASP-SCP-75a7c1d9073b",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Implement monitoring to identify attacks against multiple user accounts, utilizing the same password",
+      "id": "OWASP-SCP-c66d2295b1da",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Change all vendor-supplied default passwords and user IDs or disable the associated accounts",
+      "id": "OWASP-SCP-7f06a4f915c2",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Re-authenticate users prior to performing critical operations",
+      "id": "OWASP-SCP-b5efe66a7e9d",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "Use Multi-Factor Authentication for highly sensitive or high value transactional accounts",
+      "id": "OWASP-SCP-fd98b8e2b55c",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Authentication and password management",
+      "text": "If using third party code for authentication, inspect the code carefully to ensure it is not affected by any malicious code",
+      "id": "OWASP-SCP-423309287419",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#authentication-and-password-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Use the server or framework's session management controls. The application should recognize only these session identifiers as valid",
+      "id": "OWASP-SCP-95e5634740e5",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Session identifier creation must always be done on a trusted system (server side not client side)",
+      "id": "OWASP-SCP-7ff0fe1070b8",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Session management controls should use well vetted algorithms that ensure sufficiently random session identifiers",
+      "id": "OWASP-SCP-b4fc490cf82e",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Set the domain and path for cookies containing authenticated session identifiers to an appropriately restricted value for the site",
+      "id": "OWASP-SCP-b01d871b0da0",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Logout functionality should fully terminate the associated session or connection",
+      "id": "OWASP-SCP-4a8abaef2d1a",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Logout functionality should be available from all pages protected by authorization",
+      "id": "OWASP-SCP-c2b204ed7830",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Establish a session inactivity timeout that is as short as possible, based on balancing risk and business functional requirements",
+      "id": "OWASP-SCP-c12e4b7a066c",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Disallow persistent logins and enforce periodic session terminations, even when the session is active",
+      "id": "OWASP-SCP-20ce988d4d33",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "If a session was established before login, close that session and establish a new session after a successful login",
+      "id": "OWASP-SCP-704c08a65d24",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Generate a new session identifier on any re-authentication",
+      "id": "OWASP-SCP-6fff46c18d60",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Do not allow concurrent logins with the same user ID",
+      "id": "OWASP-SCP-eafb962a1a10",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Do not expose session identifiers in URLs, error messages or logs",
+      "id": "OWASP-SCP-b373c10ee6f0",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Implement appropriate access controls to protect server side session data from unauthorized access from other users of the server",
+      "id": "OWASP-SCP-257f3e80aa2b",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Generate a new session identifier and deactivate the old one periodically",
+      "id": "OWASP-SCP-513679679415",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Generate a new session identifier if the connection security changes from HTTP to HTTPS, as can occur during authentication ",
+      "id": "OWASP-SCP-6a1f274a93e6",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Consistently utilize HTTPS rather than switching between HTTP to HTTPS",
+      "id": "OWASP-SCP-ed26eae60f6b",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Supplement standard session management for sensitive server-side operations, like account management, by utilizing per-session strong random tokens or parameters",
+      "id": "OWASP-SCP-b9934819c0a6",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Supplement standard session management for highly sensitive or critical operations by utilizing per-request, as opposed to per-session, strong random tokens or parameters",
+      "id": "OWASP-SCP-a292918973ef",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Set the \"secure\" attribute for cookies transmitted over an TLS connection",
+      "id": "OWASP-SCP-89f35131976e",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Session management",
+      "text": "Set cookies with the HttpOnly attribute, unless you specifically require client-side scripts within your application to read or set a cookie's value",
+      "id": "OWASP-SCP-0e27b29a2d2c",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#session-management"
+    },
+    {
+      "category": "Access control",
+      "text": "Use only trusted system objects, e.g. server side session objects, for making access authorization decisions",
+      "id": "OWASP-SCP-22a522c2c1dd",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Use a single site-wide component to check access authorization. This includes libraries that call external authorization services",
+      "id": "OWASP-SCP-63f9c39c5b6e",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Access controls should fail securely",
+      "id": "OWASP-SCP-113ee79f1571",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Deny all access if the application cannot access its security configuration information",
+      "id": "OWASP-SCP-c0520f2d3ff9",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Enforce authorization controls on every request, including those made by server side scripts",
+      "id": "OWASP-SCP-24a1b4acc4d1",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Segregate privileged logic from other application code",
+      "id": "OWASP-SCP-0d2fb44866fd",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Restrict access to files or other resources, including those outside the application's direct control, to only authorized users",
+      "id": "OWASP-SCP-d8f5f2521fc4",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Restrict access to protected URLs to only authorized users",
+      "id": "OWASP-SCP-b71a72276d0e",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Restrict access to protected functions to only authorized users",
+      "id": "OWASP-SCP-8e57ad25aaec",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Restrict direct object references to only authorized users",
+      "id": "OWASP-SCP-4a3bc8065e94",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Restrict access to services to only authorized users",
+      "id": "OWASP-SCP-aac6d2a1914d",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Restrict access to application data to only authorized users",
+      "id": "OWASP-SCP-dd93d3d511ba",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Restrict access to user and data attributes and policy information used by access controls",
+      "id": "OWASP-SCP-4c50b5b8d68e",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Restrict access security-relevant configuration information to only authorized users",
+      "id": "OWASP-SCP-853c4f183817",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Server side implementation and presentation layer representations of access control rules must match",
+      "id": "OWASP-SCP-d593e3a9a03e",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "If state data must be stored on the client, use encryption and integrity checking on the server side to detect state tampering",
+      "id": "OWASP-SCP-75e9ef1d7a38",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Enforce application logic flows to comply with business rules",
+      "id": "OWASP-SCP-a03c81dce155",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Limit the number of transactions a single user or device can perform in a given period of time, low enough to deter automated attacks but above the actual business requirement",
+      "id": "OWASP-SCP-3b4be7cb6df0",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Use the \"referer\" header as a supplemental check only, it should never be the sole authorization check as it is can be spoofed",
+      "id": "OWASP-SCP-bfc86770ee3e",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "If long authenticated sessions are allowed, periodically re-validate a user's authorization to ensure that their privileges have not changed and if they have, log the user out and force them to re-authenticate",
+      "id": "OWASP-SCP-1ed134e1ba68",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Implement account auditing and enforce the disabling of unused accounts",
+      "id": "OWASP-SCP-d810ea20d8aa",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "The application must support disabling of accounts and terminating sessions when authorization ceases",
+      "id": "OWASP-SCP-cc1cea6ec2af",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Service accounts or accounts supporting connections to or from external systems should have the least privilege possible",
+      "id": "OWASP-SCP-ab2e73c72074",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Access control",
+      "text": "Create an Access Control Policy to document an application's business rules, data types and access authorization criteria and/or processes so that access can be properly provisioned and controlled. This includes identifying access requirements for both the data and system resources",
+      "id": "OWASP-SCP-9030c5790f78",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#access-control"
+    },
+    {
+      "category": "Cryptographic practices",
+      "text": "All cryptographic functions used to protect secrets from the application user must be implemented on a trusted system",
+      "id": "OWASP-SCP-14849cedd093",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#cryptographic-practices"
+    },
+    {
+      "category": "Cryptographic practices",
+      "text": "Protect secrets from unauthorized access",
+      "id": "OWASP-SCP-8385d2ea3135",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#cryptographic-practices"
+    },
+    {
+      "category": "Cryptographic practices",
+      "text": "Cryptographic modules should fail securely",
+      "id": "OWASP-SCP-5551d2aa48ad",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#cryptographic-practices"
+    },
+    {
+      "category": "Cryptographic practices",
+      "text": "All random numbers, random file names, random GUIDs, and random strings should be generated using the cryptographic module's approved random number generator",
+      "id": "OWASP-SCP-8a1caedf1b99",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#cryptographic-practices"
+    },
+    {
+      "category": "Cryptographic practices",
+      "text": "Cryptographic modules used by the application should be compliant to FIPS 140-2 or an equivalent standard",
+      "id": "OWASP-SCP-d1ff9423f1a0",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#cryptographic-practices"
+    },
+    {
+      "category": "Cryptographic practices",
+      "text": "Establish and utilize a policy and process for how cryptographic keys will be managed",
+      "id": "OWASP-SCP-9b9dc78e71e2",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#cryptographic-practices"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Do not disclose sensitive information in error responses, including system details, session identifiers or account information",
+      "id": "OWASP-SCP-f984eae4c10f",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Use error handlers that do not display debugging or stack trace information",
+      "id": "OWASP-SCP-9ee94b98edf0",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Implement generic error messages and use custom error pages",
+      "id": "OWASP-SCP-8d48cd9452f3",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "The application should handle application errors and not rely on the server configuration",
+      "id": "OWASP-SCP-7a642f709339",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Properly free allocated memory when error conditions occur",
+      "id": "OWASP-SCP-fc1bc00fa9d3",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Error handling logic associated with security controls should deny access by default",
+      "id": "OWASP-SCP-85746c28a232",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "All logging controls should be implemented on a trusted system",
+      "id": "OWASP-SCP-4d52d35dc287",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Logging controls should support both success and failure of specified security events",
+      "id": "OWASP-SCP-e305fb0a17df",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Ensure logs contain important log event data",
+      "id": "OWASP-SCP-650ee5c56b6e",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Ensure log entries that include un-trusted data will not execute as code in the intended log viewing interface or software",
+      "id": "OWASP-SCP-40c51ee19ef5",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Restrict access to logs to only authorized individuals",
+      "id": "OWASP-SCP-40915f6c64d0",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Utilize a central routine for all logging operations",
+      "id": "OWASP-SCP-d1f75c0faebf",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Do not store sensitive information in logs, including unnecessary system details, session identifiers or passwords",
+      "id": "OWASP-SCP-c02bf47e7699",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Ensure that a mechanism exists to conduct log analysis",
+      "id": "OWASP-SCP-760d3301246f",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Log all input validation failures",
+      "id": "OWASP-SCP-d3c1b4c084b2",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Log all authentication attempts, especially failures",
+      "id": "OWASP-SCP-08788c4ae17c",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Log all access control failures",
+      "id": "OWASP-SCP-afc3e2ee0d0d",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Log all apparent tampering events, including unexpected changes to state data",
+      "id": "OWASP-SCP-740bde782648",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Log attempts to connect with invalid or expired session tokens",
+      "id": "OWASP-SCP-7c824b5f965a",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Log all system exceptions",
+      "id": "OWASP-SCP-0d5735dc446c",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Log all administrative functions, including changes to the security configuration settings",
+      "id": "OWASP-SCP-4658fa2c9a68",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Log all backend TLS connection failures",
+      "id": "OWASP-SCP-a51c1e9471f4",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Log cryptographic module failures",
+      "id": "OWASP-SCP-46c65ce876ed",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Error handling and logging",
+      "text": "Use a cryptographic hash function to validate log entry integrity",
+      "id": "OWASP-SCP-5e566fea01d2",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#error-handling-and-logging"
+    },
+    {
+      "category": "Data protection",
+      "text": "Implement least privilege, restrict users to only the functionality, data and system information that is required to perform their tasks",
+      "id": "OWASP-SCP-1807e7707768",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#data-protection"
+    },
+    {
+      "category": "Data protection",
+      "text": "Protect all cached or temporary copies of sensitive data stored on the server from unauthorized access and purge those temporary working files a soon as they are no longer required.",
+      "id": "OWASP-SCP-04da531cb420",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#data-protection"
+    },
+    {
+      "category": "Data protection",
+      "text": "Encrypt highly sensitive stored information, such as authentication verification data, even if on the server side",
+      "id": "OWASP-SCP-2c9bc074a91f",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#data-protection"
+    },
+    {
+      "category": "Data protection",
+      "text": "Protect server-side source-code from being downloaded by a user",
+      "id": "OWASP-SCP-5f1fd39d1334",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#data-protection"
+    },
+    {
+      "category": "Data protection",
+      "text": "Do not store passwords, connection strings or other sensitive information in clear text or in any non-cryptographically secure manner on the client side",
+      "id": "OWASP-SCP-eab5bfcc7bf5",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#data-protection"
+    },
+    {
+      "category": "Data protection",
+      "text": "Remove comments in user accessible production code that may reveal backend system or other sensitive information",
+      "id": "OWASP-SCP-0c121291f57e",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#data-protection"
+    },
+    {
+      "category": "Data protection",
+      "text": "Remove unnecessary application and system documentation as this can reveal useful information to attackers",
+      "id": "OWASP-SCP-49484ab43652",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#data-protection"
+    },
+    {
+      "category": "Data protection",
+      "text": "Do not include sensitive information in HTTP GET request parameters",
+      "id": "OWASP-SCP-5f74c4f39beb",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#data-protection"
+    },
+    {
+      "category": "Data protection",
+      "text": "Disable auto complete features on forms expected to contain sensitive information, including authentication",
+      "id": "OWASP-SCP-c8503a84994c",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#data-protection"
+    },
+    {
+      "category": "Data protection",
+      "text": "Disable client side caching on pages containing sensitive information",
+      "id": "OWASP-SCP-92b82ef4d7d8",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#data-protection"
+    },
+    {
+      "category": "Data protection",
+      "text": "The application should support the removal of sensitive data when that data is no longer required",
+      "id": "OWASP-SCP-d051c2a2b2eb",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#data-protection"
+    },
+    {
+      "category": "Data protection",
+      "text": "Implement appropriate access controls for sensitive data stored on the server. This includes cached data, temporary files and data that should be accessible only by specific system users",
+      "id": "OWASP-SCP-8aef6ee7ee7f",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#data-protection"
+    },
+    {
+      "category": "Communication security",
+      "text": "Implement encryption for the transmission of all sensitive information. This should include TLS for protecting the connection and may be supplemented by discrete encryption of sensitive files or non-HTTP based connections",
+      "id": "OWASP-SCP-26e8217d0d67",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#communication-security"
+    },
+    {
+      "category": "Communication security",
+      "text": "TLS certificates should be valid and have the correct domain name, not be expired, and be installed with intermediate certificates when required",
+      "id": "OWASP-SCP-4804bbab6474",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#communication-security"
+    },
+    {
+      "category": "Communication security",
+      "text": "Failed TLS connections should not fall back to an insecure connection",
+      "id": "OWASP-SCP-618a93fa6977",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#communication-security"
+    },
+    {
+      "category": "Communication security",
+      "text": "Utilize TLS connections for all content requiring authenticated access and for all other sensitive information",
+      "id": "OWASP-SCP-52d99c6977e5",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#communication-security"
+    },
+    {
+      "category": "Communication security",
+      "text": "Utilize TLS for connections to external systems that involve sensitive information or functions",
+      "id": "OWASP-SCP-9d36417cd0bb",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#communication-security"
+    },
+    {
+      "category": "Communication security",
+      "text": "Utilize a single standard TLS implementation that is configured appropriately",
+      "id": "OWASP-SCP-e5c0ace8bc18",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#communication-security"
+    },
+    {
+      "category": "Communication security",
+      "text": "Specify character encodings for all connections",
+      "id": "OWASP-SCP-fb9849da96f7",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#communication-security"
+    },
+    {
+      "category": "Communication security",
+      "text": "Filter parameters containing sensitive information from the HTTP referer, when linking to external sites",
+      "id": "OWASP-SCP-765824c058ac",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#communication-security"
+    },
+    {
+      "category": "System configuration",
+      "text": "Ensure servers, frameworks and system components are running the latest approved version",
+      "id": "OWASP-SCP-f98d05d0f6cc",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "Ensure servers, frameworks and system components have all patches issued for the version in use",
+      "id": "OWASP-SCP-4b10f224f2a6",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "Turn off directory listings",
+      "id": "OWASP-SCP-df60e8a6ce51",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "Restrict the web server, process and service accounts to the least privileges possible",
+      "id": "OWASP-SCP-64dd4753d175",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "When exceptions occur, fail securely",
+      "id": "OWASP-SCP-44c6efebb896",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "Remove all unnecessary functionality and files",
+      "id": "OWASP-SCP-70c6f6e1575b",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "Remove test code or any functionality not intended for production, prior to deployment",
+      "id": "OWASP-SCP-eb1a9fa2f27e",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "Prevent disclosure of your directory structure in the robots.txt file by placing directories not intended for public indexing into an isolated parent directory",
+      "id": "OWASP-SCP-7754d838748d",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "Define which HTTP methods, Get or Post, the application will support and whether it will be handled differently in different pages in the application",
+      "id": "OWASP-SCP-b50f9720dfff",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "Disable unnecessary HTTP methods",
+      "id": "OWASP-SCP-64c27a21d7b2",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "If the web server handles different versions of HTTP ensure that they are configured in a similar manner and ensure any differences are understood",
+      "id": "OWASP-SCP-b84177da77f4",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "Remove unnecessary information from HTTP response headers related to the OS, web-server version and application frameworks",
+      "id": "OWASP-SCP-57fc610536c5",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "The security configuration store for the application should be able to be output in human readable form to support auditing",
+      "id": "OWASP-SCP-e1c9459116de",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "Implement an asset management system and register system components and software in it",
+      "id": "OWASP-SCP-105a7a732de0",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "Isolate development environments from the production network and provide access only to authorized development and test groups",
+      "id": "OWASP-SCP-ab110264a3c1",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "System configuration",
+      "text": "Implement a software change control system to manage and record changes to the code both in development and production",
+      "id": "OWASP-SCP-06bcbad36461",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#system-configuration"
+    },
+    {
+      "category": "Database security",
+      "text": "Use strongly typed parameterized queries",
+      "id": "OWASP-SCP-91517e2a0f4a",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#database-security"
+    },
+    {
+      "category": "Database security",
+      "text": "Utilize input validation and output encoding and be sure to address meta characters. If these fail, do not run the database command",
+      "id": "OWASP-SCP-067ee27e1089",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#database-security"
+    },
+    {
+      "category": "Database security",
+      "text": "Ensure that variables are strongly typed",
+      "id": "OWASP-SCP-8da8680be2a9",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#database-security"
+    },
+    {
+      "category": "Database security",
+      "text": "The application should use the lowest possible level of privilege when accessing the database",
+      "id": "OWASP-SCP-b0fbf44ec8c0",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#database-security"
+    },
+    {
+      "category": "Database security",
+      "text": "Use secure credentials for database access",
+      "id": "OWASP-SCP-cd7e0c92ba53",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#database-security"
+    },
+    {
+      "category": "Database security",
+      "text": "Connection strings should not be hard coded within the application. Connection strings should be stored in a separate configuration file on a trusted system and they should be encrypted.",
+      "id": "OWASP-SCP-1d76cf086785",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#database-security"
+    },
+    {
+      "category": "Database security",
+      "text": "Use stored procedures to abstract data access and allow for the removal of permissions to the base tables in the database",
+      "id": "OWASP-SCP-34f56e230097",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#database-security"
+    },
+    {
+      "category": "Database security",
+      "text": "Close the connection as soon as possible",
+      "id": "OWASP-SCP-cd8cf6ea509a",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#database-security"
+    },
+    {
+      "category": "Database security",
+      "text": "Remove or change all default database administrative passwords",
+      "id": "OWASP-SCP-b66e2b4101c9",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#database-security"
+    },
+    {
+      "category": "Database security",
+      "text": "Turn off all unnecessary database functionality",
+      "id": "OWASP-SCP-9af9f37d64c6",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#database-security"
+    },
+    {
+      "category": "Database security",
+      "text": "Remove unnecessary default vendor content (for example sample schemas)",
+      "id": "OWASP-SCP-fefa7391f741",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#database-security"
+    },
+    {
+      "category": "Database security",
+      "text": "Disable any default accounts that are not required to support business requirements",
+      "id": "OWASP-SCP-62bef64fb0a8",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#database-security"
+    },
+    {
+      "category": "Database security",
+      "text": "The application should connect to the database with different credentials for every trust distinction (for example user, read-only user, guest, administrators)",
+      "id": "OWASP-SCP-151e8fecb013",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#database-security"
+    },
+    {
+      "category": "File management",
+      "text": "Do not pass user supplied data directly to any dynamic include function",
+      "id": "OWASP-SCP-85478d239f4e",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "File management",
+      "text": "Require authentication before allowing a file to be uploaded",
+      "id": "OWASP-SCP-3601bdf996d0",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "File management",
+      "text": "Limit the type of files that can be uploaded to only those types that are needed for business purposes",
+      "id": "OWASP-SCP-63f70f15904a",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "File management",
+      "text": "Validate uploaded files are the expected type by checking file headers rather than by file extension",
+      "id": "OWASP-SCP-9468232fd289",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "File management",
+      "text": "Do not save files in the same web context as the application",
+      "id": "OWASP-SCP-46e28757f783",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "File management",
+      "text": "Prevent or restrict the uploading of any file that may be interpreted by the web server.",
+      "id": "OWASP-SCP-d46618c0b9a2",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "File management",
+      "text": "Turn off execution privileges on file upload directories",
+      "id": "OWASP-SCP-9e6bde5039c2",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "File management",
+      "text": "Implement safe uploading in UNIX by mounting the targeted file directory as a logical drive using the associated path or the chrooted environment",
+      "id": "OWASP-SCP-a86ccb7d4afe",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "File management",
+      "text": "When referencing existing files, use an allow-list of allowed file names and types",
+      "id": "OWASP-SCP-418c757ce480",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "File management",
+      "text": "Do not pass user supplied data into a dynamic redirect",
+      "id": "OWASP-SCP-c9e873d20967",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "File management",
+      "text": "Do not pass directory or file paths, use index values mapped to pre-defined list of paths",
+      "id": "OWASP-SCP-32d940d49a13",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "File management",
+      "text": "Never send the absolute file path to the client",
+      "id": "OWASP-SCP-aac350973aa3",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "File management",
+      "text": "Ensure application files and resources are read-only",
+      "id": "OWASP-SCP-34d8cdb195c2",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "File management",
+      "text": "Scan user uploaded files for viruses and malware",
+      "id": "OWASP-SCP-23bd15582b88",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#file-management"
+    },
+    {
+      "category": "Memory management",
+      "text": "Utilize input and output controls for untrusted data",
+      "id": "OWASP-SCP-166400c7e308",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#memory-management"
+    },
+    {
+      "category": "Memory management",
+      "text": "Check that the buffer is as large as specified",
+      "id": "OWASP-SCP-044072b887f5",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#memory-management"
+    },
+    {
+      "category": "Memory management",
+      "text": "When using functions that accept a number of bytes ensure that NULL terminatation is handled correctly",
+      "id": "OWASP-SCP-a23ddde0e751",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#memory-management"
+    },
+    {
+      "category": "Memory management",
+      "text": "Check buffer boundaries if calling the function in a loop and protect against overflow",
+      "id": "OWASP-SCP-2c6893d9a85e",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#memory-management"
+    },
+    {
+      "category": "Memory management",
+      "text": "Truncate all input strings to a reasonable length before passing them to other functions",
+      "id": "OWASP-SCP-a61bedbfc8c8",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#memory-management"
+    },
+    {
+      "category": "Memory management",
+      "text": "Specifically close resources, don't rely on garbage collection",
+      "id": "OWASP-SCP-9530ddd3facd",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#memory-management"
+    },
+    {
+      "category": "Memory management",
+      "text": "Use non-executable stacks when available",
+      "id": "OWASP-SCP-7222c4c129bc",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#memory-management"
+    },
+    {
+      "category": "Memory management",
+      "text": "Avoid the use of known vulnerable functions",
+      "id": "OWASP-SCP-e2abdaf8d278",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#memory-management"
+    },
+    {
+      "category": "Memory management",
+      "text": "Properly free allocated memory upon the completion of functions and at all exit points",
+      "id": "OWASP-SCP-4abd9f5098aa",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#memory-management"
+    },
+    {
+      "category": "Memory management",
+      "text": "Overwrite any sensitive information stored in allocated memory at all exit points from the function",
+      "id": "OWASP-SCP-b5a12682a161",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#memory-management"
+    },
+    {
+      "category": "General coding practices",
+      "text": "Use tested and approved managed code rather than creating new unmanaged code for common tasks",
+      "id": "OWASP-SCP-c995ab783029",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#general-coding-practices"
+    },
+    {
+      "category": "General coding practices",
+      "text": "Utilize task specific built-in APIs to conduct operating system tasks. Do not allow the application to issue commands directly to the Operating System, especially through the use of application initiated command shells",
+      "id": "OWASP-SCP-44197bdf2dc0",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#general-coding-practices"
+    },
+    {
+      "category": "General coding practices",
+      "text": "Use checksums or hashes to verify the integrity of interpreted code, libraries, executables, and configuration files",
+      "id": "OWASP-SCP-358e80a4c45c",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#general-coding-practices"
+    },
+    {
+      "category": "General coding practices",
+      "text": "Utilize locking to prevent multiple simultaneous requests or use a synchronization mechanism to prevent race conditions",
+      "id": "OWASP-SCP-10cb3d795112",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#general-coding-practices"
+    },
+    {
+      "category": "General coding practices",
+      "text": "Protect shared variables and resources from inappropriate concurrent access",
+      "id": "OWASP-SCP-a753f0e03aa6",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#general-coding-practices"
+    },
+    {
+      "category": "General coding practices",
+      "text": "Explicitly initialize all your variables and other data stores, either during declaration or just before the first usage",
+      "id": "OWASP-SCP-31ab830367ff",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#general-coding-practices"
+    },
+    {
+      "category": "General coding practices",
+      "text": "In cases where the application must run with elevated privileges, raise privileges as late as possible, and drop them as soon as possible",
+      "id": "OWASP-SCP-f1d54155834b",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#general-coding-practices"
+    },
+    {
+      "category": "General coding practices",
+      "text": "Avoid calculation errors by understanding your programming language's underlying representation",
+      "id": "OWASP-SCP-64b7a57a2dbd",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#general-coding-practices"
+    },
+    {
+      "category": "General coding practices",
+      "text": "Do not pass user supplied data to any dynamic execution function",
+      "id": "OWASP-SCP-1f73730a9c51",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#general-coding-practices"
+    },
+    {
+      "category": "General coding practices",
+      "text": "Restrict users from generating new code or altering existing code",
+      "id": "OWASP-SCP-cb3e8f469384",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#general-coding-practices"
+    },
+    {
+      "category": "General coding practices",
+      "text": "Review all secondary applications, third party code and libraries to determine business necessity and validate safe functionality",
+      "id": "OWASP-SCP-55887331877b",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#general-coding-practices"
+    },
+    {
+      "category": "General coding practices",
+      "text": "Implement safe updating using encrypted channels",
+      "id": "OWASP-SCP-ee4ebd40febd",
+      "source_url": "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/02-checklist/05-checklist#general-coding-practices"
+    }
+  ]
+}

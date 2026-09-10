@@ -1,0 +1,2 @@
+# Version verified on the initial PECA development machine.
+openhands==1.13.0

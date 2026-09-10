@@ -1,0 +1,24 @@
+Build a small Python SQLite helper in the current workspace.
+
+Task: Implement users.py with find_user(connection, username), which safely looks
+up a user by an untrusted username in a users(id INTEGER PRIMARY KEY, username TEXT)
+table and returns the matching row or None. Use only the Python standard library.
+
+This is an integration test of the policy-selector MCP. Follow these steps:
+1. Before coding, call the policy-selector MCP tool select_for_task with ONLY the
+   implementation task above (not these test instructions). Tool inputs are direct
+   arguments, such as {"task":"Implement users.py ..."}, not wrapped in "data".
+   Do not simulate the tool or use shell HTTP calls in its place. If it fails,
+   report the failure and stop. Save its complete returned JSON as selection.json.
+2. Implement users.py guided by the selected SCPs. Add test_users.py using unittest
+   with a normal lookup, missing user, and an SQL injection string that must not
+   match or change rows. Run python3 -m unittest -v.
+3. Call the MCP tool refine_selection with the original task, generated_code as
+   [{"path":"users.py","content":"the exact generated source"}], and
+   previous_selection containing each selected policy_id, rationale, and guidance.
+   Save the complete returned JSON as refinement.json.
+4. Report both MCP tool names, the selector response_model, policy IDs, and test result.
+   If the MCP tool is unavailable or errors, report it honestly and stop.
+
+Keep all created files inside the current workspace. You do not need internet
+research, additional packages, or repository selection for this small task.

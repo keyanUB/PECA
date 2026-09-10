@@ -1,0 +1,17 @@
+tools:
+  policy_selector:
+    signature: "policy_selector <tool> <request_file>"
+    docstring: >-
+      Call policy-selector through the standard MCP protocol. tool is select_for_task,
+      select_for_repository, refine_selection, or policy_catalog. request_file contains
+      the tool's flat JSON arguments. Use files snapshots for repositories not shared
+      with the server. A nonzero exit is a failed call, not an empty policy selection.
+    arguments:
+      - name: tool
+        type: string
+        description: MCP tool name
+        required: true
+      - name: request_file
+        type: string
+        description: Path to the JSON arguments file
+        required: true
