@@ -1,6 +1,6 @@
 # 跨 Agent 接入
 
-`policy-selector` 是独立的 MCP 服务。策略来源、选择模型和验证规则都位于
+`policy-advisor` 是独立的 MCP 服务。策略来源、选择模型和验证规则都位于
 `src/policy_selector`；客户端配置、命令桥接和已知兼容性问题放在本目录。
 
 所有客户端使用同一套 `tools/list` / `tools/call` 接口：
@@ -40,7 +40,7 @@ SWE-agent 的桥接采用其自定义命令机制，不假定某个版本具有�
 在 PECA 目录运行：
 
 ```bash
-python3 policy-selector/integrations/render_configs.py \
+python3 policy-advisor-mcp/integrations/render_configs.py \
   --repo-root /absolute/path/to/your/project \
   --output /tmp/peca-client-configs
 ```
@@ -62,7 +62,7 @@ Claude Code：将 JSON 中的 server 条目合并到项目 `.mcp.json`。
 
 ## 通用命令桥接
 
-安装或更新本包后可使用 `policy-selector-client`。也可以直接使用模块入口：
+安装或更新本包后可使用 `policy-advisor-client`。也可以直接使用模块入口：
 
 ```bash
 # 自动启动本地 stdio MCP；只发现工具，不调用选择模型
@@ -90,14 +90,14 @@ SWE-agent 的 `agent.tools.bundles`，同时保留其原有工具配置。
 agent:
   tools:
     bundles:
-      - path: /absolute/path/to/PECA/policy-selector/integrations/swe_agent
+      - path: /absolute/path/to/PECA/policy-advisor-mcp/integrations/swe_agent
 ```
 
 执行环境内必须先安装本包，使 bundle 的 `python3` 可以导入 `policy_selector`。
 例如，将本包挂载到容器后执行：
 
 ```bash
-python3 -m pip install /mounted/PECA/policy-selector
+python3 -m pip install /mounted/PECA/policy-advisor-mcp
 ```
 
 Agent 可调用：
@@ -136,7 +136,7 @@ HTTP 服务目前只监听本机回环地址，没有内建多用户认证。跨
 ## 回归验证
 
 ```bash
-cd policy-selector
+cd policy-advisor-mcp
 ../.venv/bin/python -m pytest -q
 ```
 

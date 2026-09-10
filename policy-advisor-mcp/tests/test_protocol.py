@@ -16,7 +16,7 @@ async def test_real_stdio_discovery_and_validation(tmp_path):
     async with stdio_client(server) as (read, write):
         async with ClientSession(read, write, read_timeout_seconds=timedelta(seconds=15)) as session:
             initialized = await session.initialize()
-            assert initialized.serverInfo.name == "policy-selector"
+            assert initialized.serverInfo.name == "policy-advisor"
             tools = await session.list_tools()
             assert {t.name for t in tools.tools} == {
                 "policy_catalog", "select_for_task", "select_for_repository", "refine_selection"}

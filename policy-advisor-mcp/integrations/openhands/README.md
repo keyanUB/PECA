@@ -31,7 +31,7 @@ MCP service, and other MCP clients do not load this entrypoint.
 Run the schema regression check with the Python interpreter containing OpenHands:
 
 ```bash
-/path/to/openhands/python policy-selector/integrations/openhands/compat_entrypoint.py --self-test
+/path/to/openhands/python policy-advisor-mcp/integrations/openhands/compat_entrypoint.py --self-test
 ```
 
 It checks schema agreement, required flat arguments, rejection of wrapped arguments,
@@ -40,7 +40,7 @@ and idempotent application, without an LLM request.
 Repeat the previous failing cases using their exact saved prompts:
 
 ```bash
-.venv/bin/python policy-selector/evaluation/retest_openhands.py \
+.venv/bin/python policy-advisor-mcp/evaluation/retest_openhands.py \
   --previous .artifacts/security-comparison-20260909 \
   --output .artifacts/openhands-retest-new
 ```

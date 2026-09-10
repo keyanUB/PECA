@@ -73,11 +73,11 @@ OpenHands 的 MCP schema 修复在本次完整对照中有效。主测试观察�
 从 PECA 根目录执行，输出目录必须尚不存在：
 
 ```bash
-.venv/bin/python policy-selector/evaluation/selfcheck.py
-.venv/bin/python policy-selector/evaluation/compare.py \
+.venv/bin/python policy-advisor-mcp/evaluation/selfcheck.py
+.venv/bin/python policy-advisor-mcp/evaluation/compare.py \
   --output .artifacts/security-comparison-next --repetitions 2
-.venv/bin/python policy-selector/evaluation/summarize.py \
+.venv/bin/python policy-advisor-mcp/evaluation/summarize.py \
   .artifacts/security-comparison-next
-.venv/bin/python policy-selector/evaluation/probe_leaf_symlink.py \
+.venv/bin/python policy-advisor-mcp/evaluation/probe_leaf_symlink.py \
   .artifacts/security-comparison-next
 ```

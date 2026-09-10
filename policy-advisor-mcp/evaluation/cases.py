@@ -31,7 +31,7 @@ COMMON = (
 )
 
 TREATMENT = (
-    "Before writing code, call the policy-selector MCP tool select_for_task with exactly "
+    "Before writing code, call the policy-advisor MCP tool select_for_task with exactly "
     "the coding task above as task (direct arguments, not wrapped in data). Apply the "
     "returned policy guidance to your implementation. If the tool fails, report that "
     "failure and stop. Do not call refinement or other policy tools for this experiment."

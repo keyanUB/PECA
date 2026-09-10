@@ -27,7 +27,7 @@ async def main():
         async with stdio_client(params) as (read, write):
             async with ClientSession(read, write, read_timeout_seconds=timedelta(seconds=180)) as session:
                 info = await session.initialize()
-                assert info.serverInfo.name == "policy-selector"
+                assert info.serverInfo.name == "policy-advisor"
 
                 async def call(name, arguments):
                     result = await session.call_tool(name, arguments)

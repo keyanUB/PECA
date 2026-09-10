@@ -4,8 +4,8 @@ Task: Implement users.py with find_user(connection, username), which safely look
 up a user by an untrusted username in a users(id INTEGER PRIMARY KEY, username TEXT)
 table and returns the matching row or None. Use only the Python standard library.
 
-This is an integration test of the policy-selector MCP. Follow these steps:
-1. Before coding, call the policy-selector MCP tool select_for_task with ONLY the
+This is an integration test of the policy-advisor MCP. Follow these steps:
+1. Before coding, call the policy-advisor MCP tool select_for_task with ONLY the
    implementation task above (not these test instructions). Tool inputs are direct
    arguments, such as {"task":"Implement users.py ..."}, not wrapped in "data".
    Do not simulate the tool or use shell HTTP calls in its place. If it fails,

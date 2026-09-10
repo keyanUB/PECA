@@ -51,7 +51,7 @@ def main():
     if not openhands or not os.getenv("OPENAI_API_KEY"):
         raise RuntimeError("OpenHands and OPENAI_API_KEY are required")
     openhands_python = Path(openhands).resolve().parent / "python"
-    compatibility = PECA / "policy-selector/integrations/openhands/compat_entrypoint.py"
+    compatibility = PECA / "policy-advisor-mcp/integrations/openhands/compat_entrypoint.py"
     if not openhands_python.is_file():
         raise RuntimeError("Cannot locate OpenHands Python interpreter")
     plan = {"tasks": TASKS, "common_instructions": COMMON, "treatment": TREATMENT,
@@ -63,8 +63,8 @@ def main():
             "cases_sha256": digest(Path(__file__).with_name("cases.py")),
             "openhands_python": str(openhands_python),
             "evaluator_sha256": digest(Path(__file__).with_name("evaluate.py")),
-            "selector_sha256": digest(PECA / "policy-selector/src/policy_selector/selector.py"),
-            "catalog_sha256": digest(PECA / "policy-selector/src/policy_selector/data/owasp-scp.json"),
+            "selector_sha256": digest(PECA / "policy-advisor-mcp/src/policy_selector/selector.py"),
+            "catalog_sha256": digest(PECA / "policy-advisor-mcp/src/policy_selector/data/owasp-scp.json"),
             "design": "Two fresh profiles/workspaces per task and repetition. Baseline has no MCP. "
                       "Treatment calls task selection before coding. No refinement feedback. "
                       "Identical model, task, common prompt and timeout. Both arms use the same compatibility entrypoint. "
@@ -98,7 +98,7 @@ def main():
                 state.mkdir(mode=0o700)
                 mcp = {"mcpServers": {}}
                 if arm == "scp":
-                    mcp["mcpServers"]["policy-selector"] = {"transport": "http", "url": f"http://127.0.0.1:{port}/mcp"}
+                    mcp["mcpServers"]["policy-advisor"] = {"transport": "http", "url": f"http://127.0.0.1:{port}/mcp"}
                 (state / "mcp.json").write_text(json.dumps(mcp))
                 prompt = TASKS[task] + "\n\n" + COMMON
                 if arm == "scp":

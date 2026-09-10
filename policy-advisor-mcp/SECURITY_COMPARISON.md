@@ -186,12 +186,12 @@ varies by version ([Python 3.12 documentation](https://docs.python.org/3.12/libr
 From PECA, with the existing virtual environment, OpenHands, and `OPENAI_API_KEY`:
 
 ```bash
-python3 policy-selector/evaluation/selfcheck.py
-.venv/bin/python policy-selector/evaluation/compare.py \
+python3 policy-advisor-mcp/evaluation/selfcheck.py
+.venv/bin/python policy-advisor-mcp/evaluation/compare.py \
   --output .artifacts/security-comparison-new --repetitions 2
-.venv/bin/python policy-selector/evaluation/summarize.py \
+.venv/bin/python policy-advisor-mcp/evaluation/summarize.py \
   .artifacts/security-comparison-new
-.venv/bin/python policy-selector/evaluation/refine_generated.py \
+.venv/bin/python policy-advisor-mcp/evaluation/refine_generated.py \
   .artifacts/security-comparison-new
 ```
 

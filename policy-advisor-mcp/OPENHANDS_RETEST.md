@@ -29,7 +29,7 @@ OpenHands CLI 1.13.0 原先向 Responses API 声明通用的 `data` 包装参数
 从 PECA 根目录运行：
 
 ```bash
-.venv/bin/python policy-selector/evaluation/retest_openhands.py \
+.venv/bin/python policy-advisor-mcp/evaluation/retest_openhands.py \
   --previous .artifacts/security-comparison-20260909 \
   --output .artifacts/openhands-retest-new
 ```

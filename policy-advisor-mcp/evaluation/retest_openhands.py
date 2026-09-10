@@ -29,7 +29,7 @@ def main():
     work_root = Path(tempfile.mkdtemp(prefix="peca-openhands-retest-"))
     plan = {"cases": CASES, "coding_model": "openai/gpt-5.4-mini", "selector_model": "gpt-5.6-luna",
             "previous": str(previous), "workspace_root": str(work_root),
-            "compatibility_sha256": digest(PECA / "policy-selector/integrations/openhands/compat_entrypoint.py"),
+            "compatibility_sha256": digest(PECA / "policy-advisor-mcp/integrations/openhands/compat_entrypoint.py"),
             "evaluator_sha256": digest(Path(__file__).with_name("evaluate.py")),
             "prompt_sha256": {name: digest(previous / name / "prompt.txt") for name in CASES},
             "design": "Exact previous prompts, fresh profiles/workspaces, unchanged evaluator. "

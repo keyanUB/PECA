@@ -15,7 +15,7 @@ def build_server(host="127.0.0.1", port=8765):
     catalog = Catalog(os.getenv("POLICY_SELECTOR_EXTRA_CATALOG"))
     selector = Selector(catalog)
     allowed_root = Path(os.getenv("POLICY_SELECTOR_REPO_ROOT", os.getcwd())).resolve()
-    mcp = FastMCP("policy-selector", host=host, port=port,
+    mcp = FastMCP("policy-advisor", host=host, port=port,
                   instructions="Select OWASP SCPs before coding; refine selection after code generation.")
 
     @mcp.tool()
@@ -72,7 +72,7 @@ def build_server(host="127.0.0.1", port=8765):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="OWASP policy-selector MCP server")
+    parser = argparse.ArgumentParser(description="OWASP policy-advisor MCP server")
     parser.add_argument("--transport", choices=["stdio", "streamable-http"], default="stdio")
     parser.add_argument("--port", type=int, default=8765)
     args = parser.parse_args()

@@ -1,4 +1,4 @@
-# policy-selector
+# policy-advisor
 
 An independent Python MCP server that uses **gpt-5.6-luna** to select OWASP Secure
 Coding Practices for coding tasks, incomplete repositories, and generated code.
@@ -14,7 +14,7 @@ From the PECA directory, using Python 3.12+:
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m pip install -e './policy-selector[dev]'
+.venv/bin/python -m pip install -e './policy-advisor-mcp[dev]'
 ```
 
 `OPENAI_API_KEY` must be present in the server's environment for selection calls.
@@ -25,10 +25,10 @@ arguments or MCP configuration files. Catalog discovery works without a key.
 
 ```bash
 # stdio: an MCP client starts this process and communicates over stdin/stdout
-.venv/bin/policy-selector
+.venv/bin/policy-advisor
 
 # HTTP: a local MCP client connects to http://127.0.0.1:8765/mcp
-POLICY_SELECTOR_REPO_ROOT="$PWD" .venv/bin/policy-selector --transport streamable-http
+POLICY_SELECTOR_REPO_ROOT="$PWD" .venv/bin/policy-advisor --transport streamable-http
 ```
 
 Stdio mode waiting silently is normal: it expects MCP JSON-RPC, not conversational
@@ -114,7 +114,7 @@ Repeat the end-to-end smoke test:
 ```bash
 mkdir -p .artifacts/openhands-smoke
 python3 run_openhands_with_policy.py --workspace .artifacts/openhands-smoke -- \
-  --headless --json -f "$PWD/policy-selector/examples/openhands-smoke-task.txt"
+  --headless --json -f "$PWD/policy-advisor-mcp/examples/openhands-smoke-task.txt"
 ```
 
 The task asks OpenHands to call the actual MCP tools, generate a SQLite helper,
@@ -172,7 +172,7 @@ restart the server. Duplicate IDs are rejected.
 To regenerate the OWASP snapshot after reviewing an upstream update:
 
 ```bash
-python3 policy-selector/scripts/import_owasp.py /path/to/official-checklist.md
+python3 policy-advisor-mcp/scripts/import_owasp.py /path/to/official-checklist.md
 ```
 
 Unchanged category/text pairs retain their IDs; edited practices receive new IDs.
@@ -190,10 +190,10 @@ independent security probes, and the discovered OpenHands MCP adapter mismatch.
 The successful smoke test alone does not demonstrate improved security.
 
 ```bash
-cd policy-selector
+cd policy-advisor-mcp
 ../.venv/bin/python -m pytest -q
 cd ..
-.venv/bin/python policy-selector/scripts/verify_mcp.py
+.venv/bin/python policy-advisor-mcp/scripts/verify_mcp.py
 ```
 
 The first command runs offline tests, including real stdio MCP discovery. The second

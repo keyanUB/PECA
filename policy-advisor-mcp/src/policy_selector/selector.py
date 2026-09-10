@@ -57,7 +57,7 @@ class Selector:
         owned = client is None
         if owned:
             if not os.getenv("OPENAI_API_KEY"):
-                raise ValueError("OPENAI_API_KEY is required by policy-selector")
+                raise ValueError("OPENAI_API_KEY is required by policy-advisor")
             client = AsyncOpenAI(timeout=120, max_retries=0)
         attempts = []
         try:

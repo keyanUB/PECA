@@ -2,7 +2,7 @@
 
 Python tooling for selecting secure coding policies and evaluating their use by coding agents.
 
-The independent [policy-selector MCP](policy-selector/README.md) selects OWASP
+The independent [policy-advisor MCP](policy-advisor-mcp/README.md) selects OWASP
 Secure Coding Practices using `gpt-5.6-luna`. To run OpenHands connected to it:
 
 ```bash
@@ -41,7 +41,7 @@ python3 openhands_cli.py --workspace /path/to/project run
 python3 openhands_cli.py run -- --help
 ```
 
-For policy-selector integration, use `run_openhands_with_policy.py`; bare
+For policy-advisor integration, use `run_openhands_with_policy.py`; bare
 `openhands` does not load PECA's MCP compatibility fix.
 
 For Windows CMD, enter `wsl -d Ubuntu` first, then use the Linux commands above
@@ -52,10 +52,13 @@ Reference: [OpenHands CLI installation](https://docs.openhands.dev/openhands/usa
 
 ## Project status and evaluation
 
-- [policy-selector installation and tools](policy-selector/README.md)
-- [Cross-client integration status](policy-selector/integrations/README.md)
-- [Latest baseline/SCP comparison](policy-selector/SECURITY_COMPARISON_FIXED.md)
-- [OpenHands failed-case retest](policy-selector/OPENHANDS_RETEST.md)
+The MCP package is now `policy-advisor-mcp`, with server name `policy-advisor`.
+Existing users should follow the [rename migration guide](policy-advisor-mcp/MIGRATION.md).
+
+- [policy-advisor installation and tools](policy-advisor-mcp/README.md)
+- [Cross-client integration status](policy-advisor-mcp/integrations/README.md)
+- [Latest baseline/SCP comparison](policy-advisor-mcp/SECURITY_COMPARISON_FIXED.md)
+- [OpenHands failed-case retest](policy-advisor-mcp/OPENHANDS_RETEST.md)
 
 The latest comparison completed 12 generations. Primary security checks passed
 21/22 for baseline and 22/22 for SCP guidance, but a supplementary probe found
@@ -69,4 +72,4 @@ will not resolve in a fresh clone. The reports and evaluation scripts are includ
 follow the latest report to produce a new set of artifacts.
 
 The OWASP data retains its upstream attribution and license; see
-[the data notice](policy-selector/src/policy_selector/data/NOTICE.md).
+[the data notice](policy-advisor-mcp/src/policy_selector/data/NOTICE.md).

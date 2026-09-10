@@ -1,7 +1,7 @@
 """Process-local OpenHands MCP Responses schema compatibility fix.
 
 Run with the Python interpreter that has OpenHands installed. The independent
-policy-selector server and the installed OpenHands files are not modified.
+policy-advisor server and the installed OpenHands files are not modified.
 """
 
 import json
