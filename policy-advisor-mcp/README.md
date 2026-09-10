@@ -37,6 +37,18 @@ trusted local client, and does not implement multi-user authentication.
 
 ## Tools
 
+All selection/refinement tools optionally accept `security_context` and
+`propose_obligations` (default `false`). With neither supplied, existing behavior
+and response fields are preserved. Context or `propose_obligations=true` adds
+proposed obligations, always marked advisory and unverified. No checks are executed.
+See the [contract](../docs/harness-design.md) and
+[example request](examples/security-context.json).
+
+```bash
+.venv/bin/policy-advisor-client call select_for_task \
+  --input policy-advisor-mcp/examples/security-context.json
+```
+
 | Tool | Input | Output |
 | --- | --- | --- |
 | `policy_catalog` | None | Source provenance, catalog hash, categories, all SCPs; no LLM call |

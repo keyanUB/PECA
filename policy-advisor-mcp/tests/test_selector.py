@@ -27,6 +27,8 @@ async def test_output_uses_catalog_text_and_tracks_model():
     result = await Selector(catalog, client).select("task", "Use SQLite")
     assert result["selected"][0]["policy"] == catalog.policies[policy_id].model_dump()
     assert result["response_model"] == "gpt-5.6-luna"
+    assert "obligations" not in result and "security_context" not in result
+    assert client.responses.parse.call_args.kwargs["text_format"] is Selection
     assert client.responses.parse.call_args.kwargs["store"] is False
 
 

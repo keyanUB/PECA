@@ -6,7 +6,7 @@ from typing import Any
 from mcp.server.fastmcp import FastMCP
 
 from .catalog import Catalog
-from .models import CodeFile, PreviousPolicy
+from .models import CodeFile, PreviousPolicy, SecurityContext
 from .repository import collect_repository
 from .selector import Selector
 
@@ -24,14 +24,20 @@ def build_server(host="127.0.0.1", port=8765):
         return {**catalog.describe(), "policies": catalog.records()}
 
     @mcp.tool()
-    async def select_for_task(task: str) -> dict[str, Any]:
-        """Analyze a coding task and select relevant OWASP SCPs using the selector LLM."""
-        return await selector.select("task", task)
+    async def select_for_task(task: str, security_context: SecurityContext | None = None,
+                              propose_obligations: bool = False) -> dict[str, Any]:
+        """Select relevant SCPs. Optional security_context or propose_obligations
+        adds advisory verification obligations; no checks are executed.
+        """
+        return await selector.select("task", task, security_context=security_context,
+                                     propose_obligations=propose_obligations)
 
     @mcp.tool()
     async def select_for_repository(task: str, repository_path: str | None = None,
                                     file_paths: list[str] | None = None,
-                                    files: list[CodeFile] | None = None) -> dict[str, Any]:
+                                    files: list[CodeFile] | None = None,
+                                    security_context: SecurityContext | None = None,
+                                    propose_obligations: bool = False) -> dict[str, Any]:
         """Analyze a task and incomplete repository.
 
         Choose exactly one: repository_path on the server filesystem, or files
@@ -54,11 +60,14 @@ def build_server(host="127.0.0.1", port=8765):
             coverage["mode"] = "server_filesystem"
         if not code:
             raise ValueError("No readable source files found in the repository selection")
-        return await selector.select("repository", task, code, coverage=coverage)
+        return await selector.select("repository", task, code, coverage=coverage,
+                                     security_context=security_context, propose_obligations=propose_obligations)
 
     @mcp.tool()
     async def refine_selection(task: str, generated_code: list[CodeFile],
-                               previous_selection: list[PreviousPolicy]) -> dict[str, Any]:
+                               previous_selection: list[PreviousPolicy],
+                               security_context: SecurityContext | None = None,
+                               propose_obligations: bool = False) -> dict[str, Any]:
         """Reassess previous SCPs against generated code and the original task.
 
         Pass each previous policy_id with its rationale/guidance. Results retain,
@@ -66,7 +75,8 @@ def build_server(host="127.0.0.1", port=8765):
         """
         if not generated_code or not any(f.content.strip() for f in generated_code):
             raise ValueError("Provide nonempty generated code for refinement")
-        return await selector.select("refinement", task, generated_code, previous_selection)
+        return await selector.select("refinement", task, generated_code, previous_selection,
+                                     security_context=security_context, propose_obligations=propose_obligations)
 
     return mcp
 

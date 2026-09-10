@@ -1,0 +1,11 @@
+{
+  "task": "Implement unpack_archive for customer-uploaded tar files. Extract regular files into a trusted destination directory and preserve nested paths.",
+  "security_context": {
+    "assets": [{"id": "outside_files", "statement": "Files outside the destination must not be modified", "status": "assumed"}],
+    "untrusted_inputs": [{"id": "upload", "statement": "The archive is customer supplied", "status": "supported", "evidence": [{"source": "task", "quote": "customer-uploaded tar files"}]}],
+    "sensitive_operations": [{"id": "writes", "statement": "Extraction writes files", "status": "supported", "evidence": [{"source": "task", "quote": "Extract regular files"}]}],
+    "trust_boundaries": [{"id": "archive_to_fs", "statement": "Archive member names influence server-side filesystem writes", "status": "assumed"}],
+    "assumptions": [{"id": "existing_links", "statement": "The destination may contain existing symbolic links", "status": "unknown"}]
+  },
+  "propose_obligations": true
+}
