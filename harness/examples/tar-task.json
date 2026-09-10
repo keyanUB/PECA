@@ -1,0 +1,7 @@
+{
+  "task_id": "tar-reference",
+  "family": "tar_extract",
+  "request": "Extract regular files from an uploaded tar archive into a trusted destination, preserving nested directories and returning sorted relative POSIX paths.",
+  "repository_revision": "PECA verifier reference fixtures v1",
+  "timeout_seconds": 30
+}

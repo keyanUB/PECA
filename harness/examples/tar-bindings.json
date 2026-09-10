@@ -1,0 +1,13 @@
+[
+  {
+    "obligation_id": "archive-path-containment",
+    "check_ids": [
+      "tar_extract.parent_traversal",
+      "tar_extract.absolute_path",
+      "tar_extract.symlink_member",
+      "tar_extract.hardlink_member",
+      "tar_extract.preexisting_symlink",
+      "tar_extract.preexisting_leaf_symlink"
+    ]
+  }
+]

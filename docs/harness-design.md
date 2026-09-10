@@ -1,8 +1,9 @@
 # PECA security context and obligation contract
 
-This is the first implementation increment: Policy Advisor accepts optional
-security context and proposes verification obligations. A harness controller,
-trusted check registry, sandbox runner, and acceptance engine are not implemented yet.
+Policy Advisor accepts optional security context and proposes verification
+obligations. Steps 1–3 now also provide [typed harness contracts and a trusted
+Docker verifier](../harness/README.md) for three single-file Python task families.
+A harness controller, agent adapter, and acceptance engine are not implemented yet.
 
 ## Responsibilities
 
@@ -51,11 +52,14 @@ obligation tracking belongs in a later harness contract.
 
 ## Next implementation boundary
 
-Define TaskSpec, immutable Candidate, CheckResult, and AcceptanceDecision contracts.
-Bind evidence to candidate hashes, check versions, and execution environments.
-Keep trusted checks outside agent-writable workspaces. Maintain baseline checks
-independent of selected policies. Distinguish failed checks, infrastructure errors,
-and unverified obligations. Final benchmark tests must not supply repair feedback.
+TaskSpec, immutable Candidate snapshots, CheckResult, and AcceptanceDecision
+contracts are defined in `harness/contracts.py`. The verifier binds evidence to
+candidate hashes, check versions, and execution environments, and always runs
+the family baseline. Read-only container mounts protect probe files. Failed
+checks, infrastructure errors, timeouts, and unverified mappings are distinct.
+The current verifier does not resist malicious in-process result forgery; see
+its documented threat-model limitation. Final benchmark tests must not supply
+repair feedback. The next increment is the agent adapter and bounded controller.
 
 Acceptance rules, mandatory checks, and repair budgets must be fixed by PECA's
 experiment configuration, not decided by the advisor. Held-out benchmark evaluation

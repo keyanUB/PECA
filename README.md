@@ -52,6 +52,10 @@ Reference: [OpenHands CLI installation](https://docs.openhands.dev/openhands/usa
 
 ## Project status and evaluation
 
+The [harness contracts and trusted verifier](harness/README.md) provide Docker-based
+functional/security checks for SQL queries, document reads, and archive extraction.
+The external repair controller is the next implementation step.
+
 The MCP package is now `policy-advisor-mcp`, with server name `policy-advisor`.
 Existing users should follow the [rename migration guide](policy-advisor-mcp/MIGRATION.md).
 
