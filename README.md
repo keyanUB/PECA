@@ -16,36 +16,40 @@ adapter. It is not the stock interactive OpenHands CLI.
 ## Harness architecture
 
 ```mermaid
-flowchart TD
-    subgraph RUN["1 · run_experiment.py — generation and internal verification"]
-        INPUT["Freeze protocol<br/>Prepare public task/source"] --> AGENT["OpenHands SDK<br/>Isolated coding tools"]
-        INPUT -->|"policy / full only"| ADVISOR["Policy Advisor<br/>Public evidence + OWASP SCPs"]
-        ADVISOR -->|"Read-only security guidance"| AGENT
-        AGENT -->|"Candidate"| CHECK["Independent public<br/>build/security checks"]
-        CHECK --> GATE{"Failed check and repair eligible?"}
-        GATE -->|"Yes · verification / full · within budget"| REPAIR["Restricted OpenHands repair<br/>Generated submission files only"]
-        REPAIR -->|"Revised candidate"| CHECK
-        GATE -->|"No / stopping limit"| RECORD["Record every planned slot<br/>Including failed / unavailable"]
-        INPUT -->|"Preparation / Advisor failure"| RECORD
-        RECORD --> SEAL["Seal whole population<br/>After all generation ends"]
+flowchart LR
+    TASK["Public task<br/>and code context"] --> AGENT["Coding Agent"]
+
+    subgraph HARNESS["Security Harness"]
+        POLICY["Select relevant<br/>security policies"]
+        VERIFY["Independently verify<br/>candidate code"]
+        CONTROL["Control<br/>scope-limited repair"]
+        VERIFY --> CONTROL
     end
-    subgraph EVAL["2 · evaluate_experiment.py — no model calls"]
-        SEAL --> FINAL["Verify seal<br/>Final functionality + security tests"]
-        PRIVATE["Evaluator-private benchmark tests<br/>PoCs and reference results"] --> FINAL
-    end
-    subgraph REPORT["3 · summarize_experiment.py — read existing evidence"]
-        FINAL --> SUMMARY["Results and completion status<br/>Actual usage and timing"]
-        RECORD -.->|"Recorded usage and timing"| SUMMARY
-    end
+
+    TASK --> POLICY
+    POLICY -->|"Security guidance"| AGENT
+    AGENT --> CODE["Candidate code"]
+    CODE --> VERIFY
+    CONTROL -->|"Failure feedback · target-only repair"| AGENT
+    CONTROL -->|"Stop"| OUTPUT["Code and<br/>verification status"]
 ```
 
-Only public verification can feed the repair loop. Final benchmark evaluation
-has **no feedback path** to the agent or Advisor. Unavailable candidates remain
-recorded slots; they are not silently dropped or treated as executed tests.
+The full configuration has two intervention points: context-relevant guidance
+before generation, and independent verification feedback after generation.
+The four conditions below enable or disable guidance and external repair.
 
-This editable Mermaid diagram describes the implemented repository workflow,
-not the roadmap. Update it alongside changes to stages, permissions or data
-flows; see the [component map and update checklist](docs/repository-harness.md#maintaining-the-architecture-diagram).
+Verification uses public build/tests with requested ASan/UBSan instrumentation;
+coverage is not guaranteed. Repairs can modify only generated submission targets,
+not dependencies or tests. The controller may stop when checks pass, repair is
+not eligible, or configured limits are reached. Output is code **with a verification
+status**, not a guarantee of security.
+
+Final benchmark evaluation is outside this mechanism and has **no feedback path**
+to the agent or Advisor. CLI stages, sealing and cost reporting are described below
+and in the [runbook](docs/experiment-guide.md), rather than in the mechanism diagram.
+
+The diagram is editable Mermaid source. Keep it aligned with the implementation;
+see the [component map and update checklist](docs/repository-harness.md#maintaining-the-architecture-diagram).
 
 ## Run an experiment
 

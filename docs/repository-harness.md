@@ -97,29 +97,33 @@ the original attempt, not only the restart.
 
 The editable Mermaid block in the [root README](../README.md#harness-architecture)
 is the single source of truth for the overview diagram. Do not maintain a separate
-PNG or duplicate diagram that can drift from it. The diagram covers the implemented
-repository workflow; proposed mechanisms belong in design/ablation documents until
-they are implemented.
+PNG or duplicate diagram that can drift from it. It explains the implemented
+security mechanism: context-relevant guidance and independent verification with
+scope-limited repair. It is not an experiment execution diagram. CLI stages,
+sealing, accounting and final benchmark evaluation belong in the runbook; proposed
+mechanisms belong in design/ablation documents until implemented.
 
 | Diagram component | Implementation |
 | --- | --- |
-| Three CLI stages | [CLI dispatch](../harness/benchmarks/cli.py), [run](../scripts/run_experiment.py), [evaluate](../scripts/evaluate_experiment.py), [summarize](../scripts/summarize_experiment.py) |
-| Freeze, repair scheduling and global seal | [Experiment controller](../harness/benchmarks/pilot.py) |
-| Public task/source preparation | [Benchmark adapter](../harness/benchmarks/secrepobench.py), [source snapshots](../harness/repository.py) |
-| Security policy selection | [Repository Advisor](../policy-advisor-mcp/src/policy_selector/repository.py) |
-| Coding and restricted repair tools | [Agent supervisor](../harness/adapters/repository.py), [SDK worker](../harness/adapters/repository_sdk.py), [sandbox](../harness/sandbox.py) |
-| Independent public checks | [Public verifier](../harness/verification/repository.py) |
-| Final benchmark tests and scoring | [Benchmark adapter](../harness/benchmarks/secrepobench.py), [upstream scoring](../harness/benchmarks/upstream.py) |
-| Usage records and reporting | [Usage persistence](../harness/adapters/usage.py), [reporting](../harness/benchmarks/report.py) |
+| Public task and code context | [Benchmark adapter](../harness/benchmarks/secrepobench.py), [source snapshots](../harness/repository.py) |
+| Relevant security policy selection | [Repository Advisor](../policy-advisor-mcp/src/policy_selector/repository.py) |
+| Coding Agent | [Agent supervisor](../harness/adapters/repository.py), [SDK worker](../harness/adapters/repository_sdk.py) |
+| Candidate code | [Source snapshots](../harness/repository.py), [candidate capture](../harness/benchmarks/pilot.py) |
+| Independent verification | [Public verifier](../harness/verification/repository.py) |
+| Scope-limited repair control | [Repair scheduling and stopping](../harness/benchmarks/pilot.py), [write restrictions](../harness/sandbox.py) |
+| Code and verification status | [Generation records](../harness/benchmarks/pilot.py) |
 
 When changing the workflow:
 
-1. Update nodes and arrows in the same change as the implementation; check CLI
-   names, stage order, conditional policy delivery and repair stopping rules.
+1. Update nodes and arrows with mechanism changes; preserve the two intervention
+   points, conditional guidance/repair and a separate Coding Agent. Do not add an
+   edge from policy selection to executable checks unless that binding is implemented.
 2. Preserve the distinction between public verification and evaluator-private
    tests. Never draw a final-score/reference/PoC feedback edge to generation.
-3. Reflect actual write permissions and keep failed/unavailable planned slots
-   visible. A permission boundary is not a benchmark task-qualification gate.
+3. Reflect actual write permissions and describe stopping conditions in the caption.
+   Do not label the output "secure code" or imply that stopping guarantees success.
+   Preserve failed/unavailable slots in experiment records; a permission boundary
+   is not a benchmark task-qualification gate.
 4. Update the [runbook](experiment-guide.md) if commands, flags, outputs or exit
    codes change. Preview the Mermaid block in a Mermaid-enabled Markdown renderer
    and check links to the implementation files.
