@@ -1,106 +1,175 @@
 # PECA
 
-Python tooling for selecting secure coding policies and evaluating their use by coding agents.
+A security-focused harness for coding agents, with reproducible experiments.
 
-The independent [policy-advisor MCP](policy-advisor-mcp/README.md) selects OWASP
-Secure Coding Practices using `gpt-5.6-luna`. To run OpenHands connected to it:
+PECA studies whether secure-coding guidance and independent public verification
+improve generated code. It measures functionality, benchmark security outcomes,
+agent completion and actual cost separately. SecRepoBench is an evaluation
+dataset—not a source of task-specific harness rules or an eligibility filter.
 
-```bash
-python3 run_openhands_with_policy.py --workspace /path/to/project
+The current repository workflow uses the OpenHands SDK through an isolated shell
+adapter. It is not the stock interactive OpenHands CLI.
+
+[Architecture](#harness-architecture) · [Run an experiment](#run-an-experiment) ·
+[Runbook](docs/experiment-guide.md) · [Documentation](#documentation)
+
+## Harness architecture
+
+```mermaid
+flowchart TD
+    subgraph RUN["1 · run_experiment.py — generation and internal verification"]
+        INPUT["Freeze protocol<br/>Prepare public task/source"] --> AGENT["OpenHands SDK<br/>Isolated coding tools"]
+        INPUT -->|"policy / full only"| ADVISOR["Policy Advisor<br/>Public evidence + OWASP SCPs"]
+        ADVISOR -->|"Read-only security guidance"| AGENT
+        AGENT -->|"Candidate"| CHECK["Independent public<br/>build/security checks"]
+        CHECK --> GATE{"Failed check and repair eligible?"}
+        GATE -->|"Yes · verification / full · within budget"| REPAIR["Restricted OpenHands repair<br/>Generated submission files only"]
+        REPAIR -->|"Revised candidate"| CHECK
+        GATE -->|"No / stopping limit"| RECORD["Record every planned slot<br/>Including failed / unavailable"]
+        INPUT -->|"Preparation / Advisor failure"| RECORD
+        RECORD --> SEAL["Seal whole population<br/>After all generation ends"]
+    end
+    subgraph EVAL["2 · evaluate_experiment.py — no model calls"]
+        SEAL --> FINAL["Verify seal<br/>Final functionality + security tests"]
+        PRIVATE["Evaluator-private benchmark tests<br/>PoCs and reference results"] --> FINAL
+    end
+    subgraph REPORT["3 · summarize_experiment.py — read existing evidence"]
+        FINAL --> SUMMARY["Results and completion status<br/>Actual usage and timing"]
+        RECORD -.->|"Recorded usage and timing"| SUMMARY
+    end
 ```
 
-See its README for installation, the three selection workflows, and verification.
+Only public verification can feed the repair loop. Final benchmark evaluation
+has **no feedback path** to the agent or Advisor. Unavailable candidates remain
+recorded slots; they are not silently dropped or treated as executed tests.
 
-## Quick start
+This editable Mermaid diagram describes the implemented repository workflow,
+not the roadmap. Update it alongside changes to stages, permissions or data
+flows; see the [component map and update checklist](docs/repository-harness.md#maintaining-the-architecture-diagram).
 
-Run from a Linux/macOS terminal or Ubuntu under Windows WSL:
+## Run an experiment
+
+### Prerequisites
+
+- Linux or Ubuntu under WSL, Python 3.12+ and a working Docker daemon.
+- A host environment with the [Advisor package](policy-advisor-mcp/README.md#install)
+  installed; the examples use `.venv/bin/python`.
+- A separate Python environment with the compatible OpenHands SDK, supplied with
+  `--openhands-python`.
+- The pinned SecRepoBench checkout and required agent/ARVO images already present.
+  The experiment scripts do not pull images automatically.
+- `OPENAI_API_KEY` set securely in the host environment for generation only.
+  Do not put credentials in command-line arguments or committed files.
+
+See the [runbook](docs/experiment-guide.md#prerequisites) for setup details.
+Run the following commands from the repository root. Replace `TASK_ID` with a
+task chosen before observing results and use a new experiment directory.
+
+### 1. Generate and seal
+
+This stage makes real model calls. It freezes the configuration, runs coding and
+public-only verification/repair, then seals all planned slots. It does not perform
+final benchmark evaluation.
 
 ```bash
-cd PECA
-python3 openhands_cli.py setup
-python3 openhands_cli.py run
+.venv/bin/python scripts/run_experiment.py \
+  --source .artifacts/sources/SecRepoBench \
+  --output .artifacts/NEW-EXPERIMENT \
+  --tasks TASK_ID \
+  --conditions baseline policy verification full \
+  --openhands-python /absolute/path/to/openhands-env/bin/python
 ```
 
-`setup` reuses OpenHands on your PATH if available. Otherwise it installs the
-version in `requirements-openhands.txt` into `.venv-openhands` (requires Python
-3.12+, venv/pip, and internet access). A project-local installation takes priority.
-The launcher itself uses only Python's standard library.
+### 2. Evaluate sealed candidates
 
-On first interactive launch, choose your LLM provider/model and enter your API
-key in OpenHands. OpenHands stores configuration under `~/.openhands`.
-The agent operates in PECA by default and can execute commands and edit files.
+Run only after generation completes and writes `seal.json`. This stage checks
+frozen integrity and runs final benchmark tests, without model calls or repairs.
 
 ```bash
-# Check installation without starting an agent or making an LLM request
-python3 openhands_cli.py doctor
-
-# Select another existing workspace (wrapper options go before run)
-python3 openhands_cli.py --workspace /path/to/project run
-
-# Forward options to OpenHands
-python3 openhands_cli.py run -- --help
+.venv/bin/python scripts/evaluate_experiment.py \
+  --source .artifacts/sources/SecRepoBench \
+  --experiment .artifacts/NEW-EXPERIMENT
 ```
 
-For policy-advisor integration, use `run_openhands_with_policy.py`; bare
-`openhands` does not load PECA's MCP compatibility fix.
+### 3. Summarize results and efficiency
 
-For Windows CMD, enter `wsl -d Ubuntu` first, then use the Linux commands above
-with your project's WSL path. Native Windows CMD execution is not supported by
-this launcher.
+Run after final evaluation completes. This writes `summary.json` and `summary.md`
+without generating code or rerunning tests.
 
-Reference: [OpenHands CLI installation](https://docs.openhands.dev/openhands/usage/cli/installation).
+```bash
+.venv/bin/python scripts/summarize_experiment.py \
+  --experiment .artifacts/NEW-EXPERIMENT
+```
 
-## Project status and evaluation
+Omitting `--tasks` declares **all official tasks** and can incur substantial cost.
+Do not run stages concurrently or alter the frozen implementation between
+generation and evaluation. Exit `0` means a stage completed its records—not that
+every agent or security check succeeded.
 
-The [harness contracts and trusted verifier](harness/README.md) provide Docker-based
-functional/security checks for SQL queries, document reads, and archive extraction.
-The [OpenHands controller](docs/controller-design.md) connects policy guidance,
-generation, independent acceptance checks, and bounded external repair.
-The [repository harness](docs/repository-harness.md) adds isolated OpenHands SDK
-execution, replayable source patches, and a pinned SecRepoBench development pilot.
-See [optional AST context](docs/ast-context.md) and the
-[versioned evaluator](docs/evaluator-v2.md) for their scope and usage.
-The [simpler-design experiment protocol](docs/simple-design-experiment.md) freezes
-the four-condition development comparison with AST disabled, including
-separate final evaluation and the required execution gates.
-The [isolated Python comparison runner](harness/README.md#isolated-python-comparison)
-now provides separate final checks, control qualification and execution freezing.
+See the [runbook](docs/experiment-guide.md) for parameters, outputs, exit codes,
+partial reports and interruption handling. To test existing code without models,
+use the separate [testbed CLI](docs/secrepobench-testbed.md), not the formal
+experiment workflow.
 
-The MCP package is now `policy-advisor-mcp`, with server name `policy-advisor`.
-Existing users should follow the [rename migration guide](policy-advisor-mcp/MIGRATION.md).
+## Four experiment conditions
 
-- [policy-advisor installation and tools](policy-advisor-mcp/README.md)
-- [Cross-client integration status](policy-advisor-mcp/integrations/README.md)
+| Condition ID | Security guidance | External repair using public verification |
+| --- | --- | --- |
+| `baseline` | None | No |
+| `policy` — Advisor-only | Advisor-selected policies | No |
+| `verification` | None | Yes, bounded |
+| `full` | Advisor-selected policies | Yes, bounded |
 
-The [multitask SecRepoBench report](docs/secrepobench-multitask-results.md) records
-the current requested-task screening and qualified comparison. The earlier
-[task 59438 report](docs/secrepobench-59438-results.md) remains a separate development
-study. Repository runs
-allow 60 SDK iterations for Baseline and Advisor-only. Verification-only and Full
-allow 60 initial iterations plus at most one 60-iteration repair (120 total).
-Time budgets remain 600 seconds per condition, split 300+300 for repair arms. Advisor-only receives policies in a read-only file.
-Shell time/output limit failures return recoverable observations to the agent.
-The advisor now uses server-indexed evidence references. In the latest screening,
-2 of 13 requested tasks passed the current reference qualification gate and entered
-an eight-run comparison. All candidates passed functionality. Task 9922 passed its
-hidden PoC in every condition; task 57656 passed only in Verification-only, where no
-repair occurred. All policy-enabled calls read the complete compact policy. This
-small exploratory result does not establish an Advisor or verifier benefit.
-Codex, Claude Code and SWE-agent integrations remain unverified end to end.
+Independent public checks are recorded for every candidate; only the repair
+conditions feed failures back. Agents may run their own public tests in every
+condition. Repair permissions cover only the generated submission target, not
+arbitrary dependency or test files. [Budget and scope details](docs/repository-harness.md).
 
-The [ablation study plan](ablation-study/PLAN.md) specifies All-SCP and SCP-RAG
-as separate ablations of policy access. These conditions are planned, not implemented.
+## Fairness and interpretation
 
-The policy-guided condition without external repair is named **Advisor-only**
-(formerly Policy-only). Its stable code/result ID remains `policy` for compatibility
-with frozen protocols and artifact paths. It uses Advisor-selected SCPs and
-task-specific guidance; it is distinct from the planned All-SCP and SCP-RAG ablations.
+- Declare the population before outcomes; retain failed and unavailable slots.
+  Do not filter tasks through qualification or add task-specific test fixes.
+- Keep benchmark references, PoCs and final results out of generation and repair.
+  All planned generations end before final evaluation begins.
+- Preserve every attempt. No selective reruns, overwriting results or resuming
+  generation after sealing.
+- Report actual cost and verification overhead; do not force equal expenditure.
+  Missing or checkpoint-only usage is unknown/incomplete, not zero.
+- A benchmark pass is not proof of general security. Previously inspected tasks
+  are not untouched held-out data; model pretraining contamination is not ruled out.
 
-Historical reports and raw experiment results have been removed from the working
-tree. The benchmark source checkout, client configuration and current experiment's
-qualification, control evidence and run records remain local under `.artifacts/`.
-Those files and virtual environments are excluded from Git. Use the harness
-instructions to create fresh evidence in a new clone.
+## Development and current scope
 
-The OWASP data retains its upstream attribution and license; see
-[the data notice](policy-advisor-mcp/src/policy_selector/data/NOTICE.md).
+The four-condition repository workflow, generated-file-only repair permissions
+and separate evaluation/reporting CLIs are implemented. Sanitizer coverage and
+the connection between selected policies and executable checks remain incomplete.
+All-SCP and SCP-RAG are planned ablations, not implemented conditions.
+
+Run software checks without model calls or benchmark evaluation:
+
+```bash
+.venv/bin/python -m pytest harness/tests policy-advisor-mcp/tests -q
+# Include Docker-based synthetic fixtures:
+PECA_TEST_DOCKER=1 .venv/bin/python -m pytest harness/tests policy-advisor-mcp/tests -q
+```
+
+Maintain the diagram and documentation with the implementation. Keep experiment
+evidence under `.artifacts/` (Git-ignored), including failed attempts; do not reuse
+retired exploratory results as evidence of effectiveness.
+
+## Documentation
+
+| Need | Start here |
+| --- | --- |
+| Run or troubleshoot an experiment | [Experiment runbook](docs/experiment-guide.md) |
+| Understand isolation, repairs and the architecture | [Repository harness](docs/repository-harness.md) |
+| Understand scoring and benchmark limitations | [Benchmark evaluation](docs/benchmark-evaluation.md) |
+| Build/test existing code without models | [SecRepoBench testbed](docs/secrepobench-testbed.md) |
+| Install or use the independent Policy Advisor | [Advisor MCP](policy-advisor-mcp/README.md) |
+| Launch interactive OpenHands outside formal experiments | [Interactive launcher](docs/openhands-launcher.md) |
+| Review research design and planned comparisons | [Design protocol](docs/simple-design-experiment.md) · [Ablation plan](ablation-study/PLAN.md) |
+| Explore other verifier tasks or optional analysis | [Trusted verifier](harness/README.md) · [AST context](docs/ast-context.md) |
+| Check integration status or migrate older setups | [Client integrations](policy-advisor-mcp/integrations/README.md) · [Migration](policy-advisor-mcp/MIGRATION.md) |
+
+The OWASP policy data retains its upstream attribution and license:
+[data notice](policy-advisor-mcp/src/policy_selector/data/NOTICE.md).

@@ -13,7 +13,7 @@ is not a prerequisite for completing that pipeline.
 
 The immediate priority is reliable task/repository intake, policy selection,
 agent generation, independent verification, bounded repair and reproducible
-reporting. Pipeline readiness requires an end-to-end run on qualified benchmark
+reporting. Pipeline readiness requires an end-to-end run on independently designed
 tasks, with incomplete agent work and evaluator failures distinguished from
 functional and security results. Checks remain independent of whether the advisor
 selects any policies.
@@ -107,13 +107,14 @@ For refinement, extract new evidence from the actual generated candidate.
 ## Optional pilot integration
 
 ```bash
-.venv/bin/python -m harness.benchmarks.pilot freeze \
+.venv/bin/python scripts/run_experiment.py \
   --source .artifacts/sources/SecRepoBench --output .artifacts/ast-pilot \
-  --evaluator qualified-v2 --ast-context
+  --ast-context
 
-.venv/bin/python -m harness.benchmarks.pilot run \
-  --source .artifacts/sources/SecRepoBench --output .artifacts/ast-pilot \
-  --qualification .artifacts/reference-v2 --evaluator qualified-v2
+.venv/bin/python scripts/evaluate_experiment.py \
+  --source .artifacts/sources/SecRepoBench --experiment .artifacts/ast-pilot
+
+.venv/bin/python scripts/summarize_experiment.py --experiment .artifacts/ast-pilot
 ```
 
 The new protocol records whether AST context is enabled and pins the analysis
@@ -121,18 +122,21 @@ image ID. Baseline and verification-only coding prompts remain without policy
 advice; the policy/full conditions receive AST-assisted selection. Existing
 baseline checks still run independently of policy selection.
 
-For the two supported development projects, reviewed configuration commands create
-headers in a clean masked-source sandbox before extraction. They do not access gold
-implementations or hidden PoCs. Parse and configuration coverage remain partial.
+Extraction uses only the public masked snapshot and generic compilation defaults.
+There is no project-specific configure whitelist or benchmark-specific macro/header
+setup. Missing build configuration produces partial/unavailable evidence, not task
+exclusion. Gold implementations, ARVO files and hidden PoCs are inaccessible.
 No new generation comparison is part of this milestone: selection improvement,
 security improvement and token savings require a separate controlled experiment.
 
-To exercise only repository extraction and advisor integration, without generation:
+For development, exercise extraction on an independent synthetic repository,
+not on evaluation tasks. The benchmark-specific analysis/debug CLI was removed.
+The generic extraction command makes no model call unless `--task` is supplied:
 
 ```bash
-.venv/bin/python -m harness.analysis.benchmark_context \
-  --source .artifacts/sources/SecRepoBench --output .artifacts/ast-advisor-check \
-  --tasks 910 1065 --advise
+.venv/bin/python -m harness.analysis \
+  --repository /path/to/synthetic-fixture --target-file source.c \
+  --output .artifacts/NEW-AST-FIXTURE-CHECK
 ```
 
 References: [Clang AST matching](https://clang.llvm.org/docs/LibASTMatchers.html),

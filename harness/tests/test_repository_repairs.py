@@ -12,7 +12,7 @@ from harness.sandbox import Sandbox
 
 
 def run_case(tmp_path, *, statuses=None, development=None, condition="full", budget=None,
-             seconds=1, write_target=True, developer_qualified=True, read_policy_rounds=None):
+             seconds=1, write_target=True, read_policy_rounds=None, cleanup=True):
     calls, phases = [], []
     guidance = {"selected": [{"policy_id": "SCP-test", "policy": {"text": "Validate input"},
                               "guidance": "POLICY CONTENT SENTINEL"}]}
@@ -38,21 +38,21 @@ def run_case(tmp_path, *, statuses=None, development=None, condition="full", bud
                                                                'exit_code': 0, 'output': text}) + '\n')
             else:
                 assert "control" not in limits
-            return {"status": statuses[index] if statuses else "ok", "elapsed_seconds": seconds}
+            return {"status": statuses[index] if statuses else "ok", "elapsed_seconds": seconds,
+                    "cleanup_confirmed": cleanup}
 
     class Benchmark:
-        def evaluate(self, task, candidate, output, *, phase):
+        def verify(self, task, snapshot, output):
+            assert set(task) == {'request', 'target'}
             output.mkdir()
-            phases.append(phase)
-            if phase == "development":
-                index = phases.count("development") - 1
-                (output / "development.log").write_text(f"PUBLIC FAILURE {index}")
-                return {"status": development[index] if development else "failed"}
-            return {"status": "passed", "detail": "HIDDEN POC SENTINEL"}
+            phases.append('development')
+            index = len(phases) - 1
+            (output / "development.log").write_text(f"PUBLIC FAILURE {index}")
+            return {"status": development[index] if development else "failed"}
 
     result = run_one(Benchmark(), {"id": "t", "target": "target.c", "request": "Implement the task"},
                      RepositorySnapshot((("target.c", b"// <MASK>\n", 0o644),)), condition,
-                     tmp_path / "run", Agent(), guidance, budget or default_budget(), developer_qualified)
+                     tmp_path / "run", Agent(), guidance, budget or default_budget())
     return result, calls, phases
 
 
@@ -62,8 +62,8 @@ def test_default_stops_after_one_repair_and_only_uses_developer_feedback(tmp_pat
     assert [c["iterations"] for c in calls] == [60, 60]
     assert [c["timeout"] for c in calls] == [300, 300]
     assert result["allocated_iterations"] == 120
-    assert phases == ["development"] * 2 + ["final"]
-    assert result["joint_pass"] is False
+    assert phases == ["development"] * 2
+    assert result["scoring_status"] == "not_scored"
     for index, call in enumerate(calls):
         assert POLICY_FILE in call["prompt"]
         assert "POLICY CONTENT SENTINEL" not in call["prompt"]
@@ -74,21 +74,32 @@ def test_default_stops_after_one_repair_and_only_uses_developer_feedback(tmp_pat
     assert all(change["path"] == "target.c" for r in result["rounds"] for change in r["changed_files"])
 
 
+@pytest.mark.parametrize('cleanup', [False, None])
+def test_uncertain_cleanup_blocks_candidate_capture_and_evaluation(tmp_path, cleanup):
+    result, calls, phases = run_case(tmp_path, cleanup=cleanup)
+    assert result['status'] == 'error'
+    assert result['scoring_status'] == 'not_scored'
+    assert len(calls) == len(result['agent_calls']) == 1
+    assert phases == []
+    assert not list((tmp_path / 'run').glob('candidate-*'))
+
+
 def test_incomplete_target_can_be_repaired_but_success_requires_finished_agent(tmp_path):
     result, calls, _ = run_case(tmp_path, statuses=["incomplete", "ok"], development=["failed", "passed"])
     assert len(calls) == 2
     assert result["external_repairs"] == 1
-    assert result["joint_pass"] is True
+    assert result["status"] == "ok"
+    assert "joint_pass" not in result
     other, calls, _ = run_case(tmp_path / "other", statuses=["incomplete"], development=["passed"])
     assert len(calls) == 1
-    assert other["joint_pass"] is False
+    assert other["status"] == "incomplete"
 
 
 def test_read_coverage_is_checked_on_every_round_separately_from_code_success(tmp_path):
     result, _, _ = run_case(tmp_path, development=['failed', 'passed'], read_policy_rounds=[True, False])
     assert [r['policy_delivery']['complete'] for r in result['rounds']] == [True, False]
     assert result['policy_delivery_complete'] is False
-    assert result['joint_pass'] is True  # Test outcomes remain distinct from treatment exposure.
+    assert result['status'] == 'ok'  # Treatment exposure is distinct from completion.
     result, _, _ = run_case(tmp_path / 'complete', development=['failed', 'passed'])
     assert result['policy_delivery_complete'] is True
 
@@ -102,10 +113,10 @@ def test_missing_target_does_not_trigger_repair_or_hide_operational_error(tmp_pa
 
 
 @pytest.mark.parametrize("condition", ["baseline", "policy"])
-def test_nonrepair_arms_receive_one_sixty_iteration_call(tmp_path, condition):
+def test_nonrepair_arms_have_the_same_total_coding_ceiling(tmp_path, condition):
     result, calls, _ = run_case(tmp_path, condition=condition)
     assert len(calls) == 1
-    assert calls[0]["iterations"] == 60
+    assert calls[0]["iterations"] == 120
     assert calls[0]["timeout"] == 600
     assert result["external_repairs"] == 0
 
@@ -115,7 +126,7 @@ def test_time_ceiling_stops_repairs_without_resetting_budget(tmp_path):
     assert len(calls) == 1
     assert result["status"] == "budget_exhausted"
     assert result["external_repairs"] == 0
-    assert phases[-1] == "final"
+    assert phases == ["development"]
 
 
 def test_total_iteration_ceiling_clips_calls(tmp_path):
@@ -126,11 +137,6 @@ def test_total_iteration_ceiling_clips_calls(tmp_path):
     assert result["allocated_iterations"] == 65
     assert result["status"] == "budget_exhausted"
 
-
-def test_unqualified_developer_checks_cannot_trigger_new_repairs(tmp_path):
-    result, calls, _ = run_case(tmp_path, developer_qualified=False)
-    assert len(calls) == 1
-    assert result["external_repair_enabled"] is False
 
 
 @pytest.mark.parametrize("limit", [-1, 11, True, 1.5])
@@ -165,7 +171,8 @@ def test_freeze_records_one_repair_and_file_delivery(tmp_path, monkeypatch):
     from harness.benchmarks import pilot
 
     class Benchmark:
-        evaluator_revision = "qualified-v3"
+        evaluator_revision = "benchmark-v1"
+        task_ids = ("t",)
         evaluation_limits = {
             "development_seconds": 1200,
             "final_build_seconds": 1200,
@@ -180,12 +187,12 @@ def test_freeze_records_one_repair_and_file_delivery(tmp_path, monkeypatch):
         metadata = {"t": {"project_name": "file"}}
 
         def task(self, task_id):
-            return {"id": task_id, "project": "file"}
+            return {"id": task_id, "project": "file", "image": "fixture-image"}
 
     monkeypatch.setattr(pilot.subprocess, "check_output", lambda *a, **k: "sha256:test-image\n")
     root = tmp_path / "protocol"
     protocol = pilot.freeze(Benchmark(), root, ["t"])
-    assert protocol["version"] == 2
+    assert protocol["version"] == 3
     assert protocol["budget"] == default_budget(1)
     assert protocol["policy_delivery"]["path"] == POLICY_FILE
     assert pilot.load_protocol(root) == protocol

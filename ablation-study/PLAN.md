@@ -173,31 +173,31 @@ are not security outcomes; do not claim precision/recall without reviewed labels
 
 ## Readiness gates and execution sequence
 
-1. **Stabilize the repository pipeline.** Confirm policy-file access, recoverable
-   shell limits, completed generation and the one-repair path. Task 59438 is a
-   development/calibration task because its outcomes are already known.
-2. **Qualify evaluators.** Repeatedly check secure and vulnerable references;
-   reject-all, accept-all and unchanged-code controls must not receive joint
-   success. Preserve qualification failures and version any evaluator changes.
+1. **Stabilize the repository pipeline on synthetic fixtures.** Confirm policy-file
+   access, recoverable shell limits, completion and repair without tuning on
+   benchmark tasks or hidden outcomes. Record prior exposure honestly.
+2. **Keep environment diagnostics separate.** Reference self-checks must not filter
+   benchmark inputs, alter original tests or become agent/Advisor feedback.
+   Validate PECA's own verifier logic using independent synthetic controls.
 3. **Implement the two policy-access adapters.** Check catalog completeness,
    deterministic retrieval, output limits, read-only access, isolation and logging.
    Use task/context information only; hidden answers must stay inaccessible.
-4. **Freeze a small first-phase pilot.** Suggested starting size: three qualified
-   development tasks from at least two projects, three repetitions and four
-   conditions (`baseline`, `policy`, `all_scp`, `scp_rag`): **36 runs**. If suitable
-   tasks are unavailable, report a smaller feasibility pilot explicitly rather
-   than implying equivalent statistical coverage.
-5. **Audit and analyze.** Randomize condition order within task/repetition blocks;
-   preserve the generated schedule. Compare matched outcomes and cost. The pilot
-   is descriptive; do not make significance claims from three tasks.
-6. **Expand only after reviewing feasibility.** Preselect held-out projects, a
+4. **Freeze the population before observing outcomes.** Full benchmark evaluation
+   keeps every official task. Any smaller budgeted subset must be declared in
+   advance without reference-health or result-based selection, and labelled as
+   partial coverage. Preserve each planned repetition and condition, including
+   preparation, generation and scoring failures.
+5. **Seal then score.** Finish all planned generations and repairs before hidden
+   evaluation. Preserve the schedule and candidate hashes. Record actual costs
+   rather than forcing equal spending, and compare effectiveness and efficiency.
+6. **Declare future studies separately.** Preselect genuinely unexposed data, a
    sample-size justification, uncertainty analysis and a spending limit before
    running the confirmatory study. Add repair-enabled ablations or `advisor_raw`
    only with a new frozen protocol.
 
 The execution manifest must record exact tasks/split, repetitions, order seed,
 all model and package settings, code/image/catalog/index hashes, query limits,
-policy rendering, shared-cache rules, budgets, evaluator qualification, and the
+policy rendering, shared-cache rules, budgets, independent environment diagnostics, and the
 rule for handling infrastructure failures. No benchmark run is authorized or
 started by creating this plan.
 
@@ -230,5 +230,5 @@ results, duplicate reports or abandoned experiment versions.
 Related context:
 
 - [Repository harness and current budgets](../docs/repository-harness.md)
-- [Versioned evaluator](../docs/evaluator-v2.md)
-- [Task 59438 development findings](../docs/secrepobench-59438-results.md)
+- [Benchmark evaluation boundary](../docs/benchmark-evaluation.md)
+- [Pre-run correctness review and fresh-evidence gates](../docs/pre-run-review.md)

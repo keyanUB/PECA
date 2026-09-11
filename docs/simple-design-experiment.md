@@ -1,15 +1,16 @@
-# Simpler-design experiment v2
+# Simpler-design experiment v4
 
-Status: **implementation qualified; execution requires a matching frozen manifest**.
+Status: **fresh qualification and smoke evidence required; execution not ready**.
 This is a small development experiment, not a confirmatory benchmark study. Final
 tests are separate from the development suite used for repair feedback. No generation
 runs may start until the execution gates below are satisfied and a matching
 execution manifest is frozen. The 36-run comparison has not started.
 
 The machine-readable design is [simple-design-protocol.json](simple-design-protocol.json),
-with its byte-level checksum in `simple-design-protocol.sha256`. Version 2 removes
-historical audit/report references during cleanup and records the implemented
-suites. Tasks, conditions, models, budgets and run order are unchanged. Current
+with its byte-level checksum in `simple-design-protocol.sha256`. Version 4 removes
+benchmark-task-specific follow-up prescriptions. Version 3 retired previous
+qualification/smoke claims after the 2026-09-11 cleanup. This synthetic Python
+experiment's tasks, conditions, models, budgets and run order are unchanged. Current
 runtime source hashes belong to the execution manifest. Record substantive design
 changes in a new version before generation.
 
@@ -155,9 +156,10 @@ value in this sample. A null result on three tasks does not prove no future valu
 
 ## Repository follow-up
 
-After the Python pilot, task 910 can demonstrate repository feasibility under
-the versioned evaluator after fresh qualification. Its external repair feedback
-remains functional; do not claim a C/C++
-policy-to-security-check implementation. Task 1065 remains diagnostic until its
-runtime qualifies reliably. Broader repository effectiveness and AST ablations
-require separate later protocols.
+SecRepoBench remains evaluation data, not a source of task-specific harness rules.
+Use independent synthetic fixtures for implementation debugging. Repository
+experiments require their own frozen population and complete generation/sealing/
+scoring barrier; reference self-checks must not filter tasks or influence repair.
+Preserve previously exposed tasks with an exposure disclosure, without claiming
+an untouched held-out set. Report observed cost and effectiveness jointly rather
+than forcing identical actual spending. See [repository harness](repository-harness.md).

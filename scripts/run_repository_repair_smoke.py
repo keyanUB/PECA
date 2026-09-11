@@ -4,6 +4,10 @@ import hashlib
 import json
 from pathlib import Path
 import shlex
+import sys
+
+if __package__ in (None, ''):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from harness.adapters.repository import RepositoryAgent
 from harness.benchmarks.pilot import run_one
@@ -28,19 +32,20 @@ class IndexCheck:
     def __init__(self, workspace):
         self.workspace = workspace
 
-    def evaluate(self, task, candidate, output, *, phase):
+    def verify(self, task, snapshot, output):
         output.mkdir()
+        source = next(d for p, d, _ in snapshot.files if p == task['target'])
         test = ("int allowed_index(int,int); int main(void) { return !(allowed_index(0,1) && "
                 "!allowed_index(-1,1) && !allowed_index(1,1) && !allowed_index(0,0)); }")
-        command = ("printf '%s' " + shlex.quote(candidate.read_text()) + " > /workspace/solution.c\n"
+        command = ("printf '%s' " + shlex.quote(source.decode()) + " > /workspace/solution.c\n"
                    "printf '%s' " + shlex.quote(test) + " > /workspace/test.c\n"
                    "cc -Wall -Werror /workspace/solution.c /workspace/test.c -o /workspace/check && /workspace/check")
         with Sandbox(workspace=self.workspace) as box:
             result = box.execute(command)
-        (output / (phase + ".log")).write_text(result["output"] +
+        (output / "development.log").write_text(result["output"] +
             "\nExpected allowed_index(-1,1) == 0; reject negative and out-of-range indices.\n")
         return {"status": "passed" if result["exit_code"] == 0 else "failed",
-                "candidate_sha256": hashlib.sha256(candidate.read_bytes()).hexdigest()}
+                "candidate_sha256": hashlib.sha256(source).hexdigest()}
 
 
 def main():
@@ -61,7 +66,8 @@ def main():
                      {"agent_seconds": 240, "max_iterations": 30,
                       "first_repair_arm_iterations": 10, "first_repair_arm_seconds": 60})
     print(json.dumps({k: v for k, v in result.items() if k != "rounds"}, indent=2))
-    if result.get("status") != "ok" or not result.get("joint_pass") or result["external_repairs"] != 1:
+    if (result.get("status") != "ok" or not result['rounds']
+            or result['rounds'][-1]['development']['status'] != 'passed' or result["external_repairs"] != 1):
         raise SystemExit("Seeded repair smoke did not pass")
 
 

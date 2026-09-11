@@ -8,7 +8,6 @@ import pytest
 
 from harness.repository import RepositorySnapshot, safe_path
 from harness.sandbox import Sandbox
-from harness.benchmarks.pilot import qualified
 
 
 def test_binary_multifile_patch_replays_add_delete_mode_and_content(tmp_path):
@@ -59,13 +58,6 @@ def test_patch_refuses_wrong_base(tmp_path):
         changed.apply_patch(tmp_path / "patch")
 
 
-@pytest.mark.parametrize("statuses,expected", [(("passed", "failed", "passed"), True),
-    (("passed", "error", "passed"), False), (("passed", "failed", "failed"), False),
-    (("failed", "failed", "passed"), False), (("passed", "passed", "passed"), False)])
-def test_qualification_requires_discriminating_healthy_oracles(statuses, expected):
-    assert qualified(*({"status": s} for s in statuses)) is expected
-
-
 @pytest.mark.skipif(os.getenv("PECA_TEST_DOCKER") != "1", reason="requires Docker")
 def test_agent_boundary_no_host_secret_network_or_hidden_reference(tmp_path, monkeypatch):
     root = tmp_path / "work"
@@ -109,78 +101,12 @@ def test_timed_out_command_retires_container(tmp_path):
         assert box.closed
 
 
-def test_hidden_results_never_enter_repair_feedback(tmp_path):
-    from harness.benchmarks.pilot import run_one
-    calls, prompts = [], []
-
-    class Agent:
-        def run(self, workspace, output, prompt, **kwargs):
-            output.mkdir()
-            prompts.append(prompt)
-            (workspace / "target.c").write_text("int completed = 1;\n")
-            return {"status": "ok", "elapsed_seconds": 1}
-
-    class Benchmark:
-        def evaluate(self, task, candidate, output, *, phase):
-            calls.append(phase)
-            output.mkdir()
-            if phase == "development":
-                (output / "development.log").write_text("PUBLIC UNIT FAILURE")
-                return {"status": "failed" if calls.count(phase) == 1 else "passed"}
-            return {"status": "failed", "detail": "SECRET POC MARKER"}
-
-    snapshot = RepositorySnapshot((("target.c", b"// <MASK>\n", 0o644),))
-    task = {"id": "t", "target": "target.c", "request": "Complete the code"}
-    budget = {"agent_seconds": 300, "max_iterations": 30, "first_repair_arm_iterations": 20, "first_repair_arm_seconds": 200}
-    result = run_one(Benchmark(), task, snapshot, "full", tmp_path / "run", Agent(), {"selected": []}, budget)
-    assert calls == ["development", "development", "final"]
-    assert len(prompts) == 2
-    assert "PUBLIC UNIT FAILURE" in prompts[1]
-    assert all("SECRET POC MARKER" not in p for p in prompts)
-    assert result["functional_pass"] is True
-    assert result["joint_pass"] is False
-    assert result["external_repairs"] == 1
-
-
-def test_unqualified_developer_suite_cannot_trigger_repair(tmp_path):
-    from harness.benchmarks.pilot import run_one
-    calls = []
-
-    class Agent:
-        def run(self, workspace, output, prompt, **kwargs):
-            calls.append("agent")
-            return {"status": "ok", "elapsed_seconds": 1}
-
-    class Benchmark:
-        def evaluate(self, *args, phase):
-            calls.append(phase)
-            return {"status": "failed"}
-
-    snapshot = RepositorySnapshot((("target.c", b"int x;", 0o644),))
-    result = run_one(Benchmark(), {"id": "t", "target": "target.c", "request": "complete"}, snapshot,
-        "verification", tmp_path / "run", Agent(), None, {"agent_seconds": 300, "max_iterations": 30}, False)
-    assert calls == ["agent", "development", "final"]
-    assert result["external_repair_enabled"] is False
-
-
-def test_summary_excludes_unqualified_runs_from_joint_scoring(tmp_path):
-    import hashlib
-    from scripts.summarize_repository_pilot import summarize
-    protocol = {"runs": [{"task_id": "910", "condition": "baseline"}], "tasks": [{"id": "910"}],
-                "benchmark_revision": "pinned", "stage": "development_feasibility"}
-    content = json.dumps(protocol).encode()
-    (tmp_path / "protocol.json").write_bytes(content)
-    (tmp_path / "protocol.sha256").write_text(hashlib.sha256(content).hexdigest())
-    output = tmp_path / "910/baseline"
-    output.mkdir(parents=True)
-    (output.parent / "qualification.json").write_text(json.dumps({"qualified": False}))
-    (output / "result.json").write_text(json.dumps({"status": "ok", "joint_pass": True, "rounds": [],
-                                                    "hidden_final": {"status": "build_failed"}}))
-    result, text = summarize(tmp_path)
-    assert result["qualified_runs"] == 0
-    assert result["results"][0]["joint_pass"] is None
-    assert result["results"][0]["hidden_status"] == "build_failed"
-    assert "build_failed" in text
+@pytest.mark.skipif(os.getenv("PECA_TEST_DOCKER") != "1", reason="requires Docker")
+def test_agent_can_compile_and_execute_temporary_regression_test(tmp_path):
+    with Sandbox(workspace=tmp_path) as box:
+        result = box.execute("printf 'int main(void) { return 0; }' > /tmp/peca-check.c && "
+                             "cc /tmp/peca-check.c -o /tmp/peca-check && /tmp/peca-check")
+        assert result['exit_code'] == 0, result['output']
 
 
 def test_frozen_protocol_rejects_tampering(tmp_path):

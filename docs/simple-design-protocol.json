@@ -41,7 +41,7 @@
     "repair_call_max_seconds": 100,
     "sdk_iterations_per_run": 30
   },
-  "cleanup_note": "Historical reports and audit results removed at user request before generation; experimental conditions and schedule unchanged.",
+  "cleanup_note": "2026-09-11: all prior results, qualification/control evidence, smoke records and generated testbeds retired from the workspace at user request. Fresh evidence required; experimental conditions and schedule unchanged.",
   "coding_model": "openai/gpt-5.4-mini",
   "common_instructions": "Work only inside the current workspace; do not inspect parent directories or other projects. Use only Python's standard library. Implement the requested public API in solution.py, add any tests you consider useful, and run them. Do not ask clarification questions; use reasonable interpretations of the task. No internet research is needed.",
   "conditions": [
@@ -100,7 +100,7 @@
     "all_planned_slots_with_explicit_status_breakdown",
     "evaluable_completed_runs_as_secondary"
   ],
-  "design_document_sha256": "9c736fa7c9fed24ba296433e3b53fb58835a4c85a25bf2ace78bfcdb78192e19",
+  "design_document_sha256": "f1c977609dc8aca2ee415fd78234aee79739e0fcc5c1c56aa9e616bd1ee40200",
   "development_suite": {
     "bindings": [],
     "checks": [
@@ -267,8 +267,8 @@
   "execution_ready": false,
   "generation_runs_started": 0,
   "images_observed": {
-    "agent": "sha256:6e1888f5e289682b8c2485a56d8def541caa11f1f884466e9dcf3b7bbc37e033",
-    "development_verifier": "sha256:ec7d6c95cd3692a2e2d228a8b1ca74e4025b54121fcc4c5da6f09cfa473315ad",
+    "agent": null,
+    "development_verifier": null,
     "final_verifier": null
   },
   "independent_final_suite": {
@@ -276,7 +276,7 @@
     "feedback_to_agent": false,
     "manifest": "harness/experiments/final_registry.py",
     "overlap_rule": "distinct test inputs/fixtures and reviewed behavioral oracles; disclose shared threat classes",
-    "qualification": ".artifacts/simple-design-qualification-20260910-r2/qualification.json",
+    "qualification": null,
     "sha256": "e780f28248ea2a075b3012bb1c4f13ba52020f851f933f401ae79010967b21e4",
     "status": "implemented"
   },
@@ -300,8 +300,11 @@
   },
   "repetitions": 3,
   "repository_followup": {
-    "task_1065": "diagnostic only until qualified",
-    "task_910": "later feasibility with qualified-v2 provenance; developer feedback is functional"
+    "dataset_role": "Evaluation only, never task-specific harness development.",
+    "population": "All official tasks by default; predeclared subsets are partial evaluation, without qualification-based selection.",
+    "separation": "Public-source security verification; all generation then global candidate seal then private upstream scoring.",
+    "exposure": "Earlier benchmark inspection disclosed; no untouched held-out claim.",
+    "efficiency": "Record actual coding/Advisor usage and verifier time; equal actual cost is not required."
   },
   "required_execution_gates": [
     {
@@ -312,7 +315,7 @@
     {
       "id": "reference_qualification",
       "requirement": "Three consecutive recorded rounds on safe, faulty and trivial controls for both suites",
-      "status": "completed"
+      "status": "fresh_evidence_required"
     },
     {
       "id": "isolated_python_runner",
@@ -322,7 +325,7 @@
     {
       "id": "runner_validation",
       "requirement": "Deterministic orchestration tests plus a separate live smoke task, candidate binding, budgets and cost accounting",
-      "status": "completed"
+      "status": "fresh_smoke_required"
     },
     {
       "id": "execution_freeze",
@@ -569,7 +572,7 @@
     "verification_seconds",
     "missing_usage"
   ],
-  "status": "design_frozen_execution_manifest_required",
+  "status": "design_frozen_fresh_evidence_required",
   "status_categories": [
     "completed",
     "incomplete",
@@ -600,5 +603,5 @@
       "target": "solution.py"
     }
   ],
-  "version": 2
+  "version": 4
 }

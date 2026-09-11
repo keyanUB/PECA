@@ -117,6 +117,12 @@ symlink validation passes, while the new file-symlink probe detects an outside w
 
 ## Isolated Python comparison
 
+This section concerns PECA's own synthetic development fixtures. Its control
+checks are not a SecRepoBench task-eligibility rule. Repository evaluation instead
+uses public-source security verification and a complete-population candidate seal;
+see [repository harness](../docs/repository-harness.md). All benchmark slots remain
+in the denominator, and actual costs are reported rather than forced equal.
+
 `harness.experiments.simple` implements the four-condition development experiment
 specified in the [frozen design](../docs/simple-design-experiment.md). A separate
 execution manifest records the runtime and current qualification. AST remains disabled.
@@ -167,14 +173,16 @@ the repair function. A passing final security subset alone is not joint success.
 The matrix reuses the SDK adapter and verifier, not the old host-executing Python
 comparison script. Historical one-off schema, refinement and duplicate fixture
 helpers and historical reports were removed from the working tree. Previously
-committed files remain in Git history. Only current repository protocols, qualification, control evidence, and run
-records are retained locally. Final verification
+committed files remain in Git history. All prior qualification, control evidence,
+run records and generated testbeds have now been retired from the active workspace.
+Reusable plans, fixtures, source checkouts and configuration generators remain. Final verification
 still assumes cooperative generated code rather than an adversarial candidate
 trying to tamper with its in-process evaluator.
 
 Historical Python comparison reports and raw runs have been removed. The reusable
-runner, fixtures, protocol and analyzer remain available. The current repository
-experiment is documented in the [task 59438 report](../docs/secrepobench-59438-results.md).
+runner, fixtures, protocol and analyzer remain available. Before a fresh repository
+experiment, follow the [pre-run review](../docs/pre-run-review.md) and
+[testbed CLI guide](../docs/secrepobench-testbed.md).
 
 After producing a fresh Python comparison, validate its saved evidence and export
 statistical tables without new model calls:

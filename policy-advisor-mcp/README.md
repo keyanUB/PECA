@@ -130,20 +130,11 @@ Provider error bodies and credentials are not copied into API-failure diagnostic
 If SDK parsing fails before a response is exposed, its output and usage may be
 unavailable; transport cancellation can also prevent a diagnostic response.
 
-A bounded real-model selection and OpenHands file-read check for task 59438:
-
-```bash
-.venv/bin/python -m scripts.check_repository_advisor \
-  --source .artifacts/sources/SecRepoBench \
-  --output .artifacts/NEW-ADVISOR-SMOKE --task 59438
-```
-
-This makes one MCP selection call (up to two model attempts) and gives OpenHands
-at most six steps to read the complete compact policy document with the standalone
-`cat /peca-control/policy.json` command, without a configured read-length cutoff. It records the frozen runtime, input, raw selection, usage and command
-trace. Read coverage requires complete text in tool observations; a file hash alone
-does not pass. Raw audit details are saved outside the agent's policy mount. It does not implement the task
-or evaluate generated-code security; use a new output directory for each run.
+The benchmark-based Advisor smoke script has been removed. Use independent
+synthetic fixtures for selection and policy-file delivery development, not
+SecRepoBench evaluation inputs. Formal repository experiments save raw responses
+outside the agent mount and audit complete policy-file reads separately from
+code-test outcomes. A file hash alone does not establish delivery.
 
 ## Use with OpenHands
 
