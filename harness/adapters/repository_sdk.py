@@ -10,7 +10,8 @@ import sys
 sys.path = [p for p in sys.path if Path(p).resolve() != Path(__file__).resolve().parent]
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from harness.sandbox import Sandbox
-from harness.adapters.repository import system_prompt
+from harness.adapters.repository import system_prompt, execute_repository_command
+from harness.policy_delivery import visible_command_output
 
 
 from pydantic import Field, PrivateAttr
@@ -48,10 +49,10 @@ class Executor(ToolExecutor):
         self.sandbox, self.output = sandbox, output
 
     def __call__(self, action, conversation=None):
-        result = self.sandbox.execute(action.command, timeout=60)
+        result = execute_repository_command(self.sandbox, action.command)
         with (self.output / "commands.jsonl").open("a") as f:
             f.write(json.dumps({"command": action.command, **result}) + "\n")
-        return ShellObservation(output=result["output"][-40_000:], exit_code=result["exit_code"])
+        return ShellObservation(output=visible_command_output(result), exit_code=result["exit_code"])
 
 class RepositoryShell(ToolDefinition):
     @classmethod
@@ -69,7 +70,8 @@ def main():
     output = Path(req["output"])
     output.mkdir(parents=True, exist_ok=False)
 
-    sandbox_instance = Sandbox(req["image"], Path(req["workspace"]))
+    sandbox_instance = Sandbox(req["image"], Path(req["workspace"]),
+                               control=Path(req["control"]) if req.get("control") else None)
     if "container_name" in req:
         sandbox_instance.name = req["container_name"]
     with sandbox_instance as sandbox:

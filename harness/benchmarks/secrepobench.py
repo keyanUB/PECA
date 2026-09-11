@@ -88,7 +88,7 @@ class SecRepoBench:
                 if phase == "development":
                     evaluator.prepare_development(box, task, self.evaluator_revision)
                     command = self.unit_commands[task["project"]]
-                    checked = box.execute(evaluator.command(task, self.evaluator_revision, command), 240)
+                    checked = box.execute(evaluator.development_command(task, self.evaluator_revision, command), 240)
                     (output / "development.log").write_text(checked["output"])
                     result.update(status="passed" if checked["exit_code"] == 0 else "failed", exit_code=checked["exit_code"])
                 else:

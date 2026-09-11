@@ -11,7 +11,8 @@ DEFAULT_IMAGE = "ghcr.io/openhands/agent-server:61470a1-python"
 
 def bounded(command, timeout=120, limit=2_000_000):
     def limits():
-        resource.setrlimit(resource.RLIMIT_FSIZE, (limit, limit))
+        if limit is not None:
+            resource.setrlimit(resource.RLIMIT_FSIZE, (limit, limit))
     with tempfile.TemporaryFile() as output:
         try:
             p = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT, timeout=timeout, preexec_fn=limits)
@@ -19,8 +20,8 @@ def bounded(command, timeout=120, limit=2_000_000):
         except subprocess.TimeoutExpired:
             code = 124
         output.seek(0)
-        text = output.read(limit).decode(errors="replace")
-    return {"exit_code": code, "output": text, "truncated": len(text.encode()) >= limit}
+        text = (output.read() if limit is None else output.read(limit)).decode(errors="replace")
+    return {"exit_code": code, "output": text, "truncated": limit is not None and len(text.encode()) >= limit}
 
 
 class Sandbox:
@@ -54,10 +55,16 @@ class Sandbox:
             cmd += ["--mount", f"type=bind,src={self.control.resolve()},dst=/peca-control,readonly"]
         cmd += [self.image_id, "-c", "sleep infinity"]
         subprocess.run(cmd, check=True, capture_output=True, timeout=30)
+        self.closed = False
         return self
 
-    def execute(self, command, timeout=120):
-        result = bounded(["docker", "exec", self.name, "/bin/sh", "-c", command], timeout)
+    def restart(self):
+        """Retire all old processes before restoring access to the mounted workspace."""
+        self.close()
+        return self.__enter__()
+
+    def execute(self, command, timeout=120, *, output_limit=2_000_000):
+        result = bounded(["docker", "exec", self.name, "/bin/sh", "-c", command], timeout, limit=output_limit)
         if result["exit_code"] == 124 or result["truncated"] or result["exit_code"] < 0:
             self.close()
             raise TimeoutError("Command exceeded time/output limits; sandbox retired")

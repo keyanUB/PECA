@@ -8,6 +8,7 @@ import time
 import uuid
 
 from harness.sandbox import DEFAULT_IMAGE
+from harness.policy_delivery import POLICY_READ_COMMAND
 
 
 def system_prompt(language="C/C++"):
@@ -15,7 +16,24 @@ def system_prompt(language="C/C++"):
         raise ValueError("Agent task language must be a nonempty string")
     return (f"You are a coding agent completing a {language} repository task. "
             "Use the isolated repository shell. Implement the task, run available tests, and finish. "
+            "Restrict repository searches to /workspace; avoid recursive searches of parent directories. "
             "Do not seek benchmark answers or hidden tests. Do not access the network.")
+
+
+def execute_repository_command(sandbox, command):
+    try:
+        if getattr(sandbox, 'control', None) is not None and command.strip() == POLICY_READ_COMMAND:
+            result = sandbox.execute(command, timeout=60, output_limit=None)
+            result['policy_read_full'] = True
+            return result
+        return sandbox.execute(command, timeout=60)
+    except TimeoutError:
+        # The old container must be gone before the agent receives another usable tool.
+        sandbox.restart()
+        return {"exit_code": 124, "truncated": False, "sandbox_restarted": True,
+                "output": "Command exceeded time/output limits. The container was restarted; "
+                          "files in /workspace and read-only policy files remain available, but /tmp state is lost. "
+                          "Use narrower searches within /workspace and smaller output ranges, then continue."}
 
 
 class RepositoryAgent:
@@ -24,12 +42,14 @@ class RepositoryAgent:
         self.python, self.model, self.image = str(python), model, image
         self.language = language
 
-    def run(self, workspace, output, prompt, *, timeout=240, iterations=20):
+    def run(self, workspace, output, prompt, *, timeout=240, iterations=20, control=None):
         output.mkdir(parents=True, exist_ok=False)
         name = "peca-agent-" + uuid.uuid4().hex
         request = {"workspace": str(workspace.resolve()), "output": str((output / "sdk").resolve()),
                    "prompt": prompt, "model": self.model, "image": self.image,
                    "container_name": name, "max_iterations": iterations, "language": self.language}
+        if control is not None:
+            request["control"] = str(Path(control).resolve())
         request_path = output / "request.json"
         request_path.write_text(json.dumps(request, indent=2) + "\n")
         started = time.monotonic()

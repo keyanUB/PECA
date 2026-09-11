@@ -5,7 +5,8 @@ from unittest.mock import AsyncMock
 import pytest
 
 from policy_selector.catalog import Catalog
-from policy_selector.models import AdvisorySelection, ContextClaim, Evidence, Obligation, ProposedCheck, SecurityContext
+from policy_selector.models import (AdvisorySelection, ContextClaim, Evidence, Obligation, ProposedCheck,
+                                    SecurityContext, SourceReferencedAdvisorySelection)
 from policy_selector.selector import Selector
 from test_selector import decision, response
 
@@ -34,7 +35,7 @@ async def test_context_and_advisory_status_are_preserved():
     assert result["obligations"][0]["verification_status"] == "unverified"
     assert result["obligations"][0]["advisory"] is True
     assert result["security_context"]["untrusted_inputs"][0]["status"] == "assumed"
-    assert parse.call_args.kwargs["text_format"] is AdvisorySelection
+    assert parse.call_args.kwargs["text_format"] is SourceReferencedAdvisorySelection
     assert json.loads(parse.call_args.kwargs["input"])["security_context"] == context.model_dump()
 
 

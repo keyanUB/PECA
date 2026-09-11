@@ -72,16 +72,31 @@ Existing users should follow the [rename migration guide](policy-advisor-mcp/MIG
 - [policy-advisor installation and tools](policy-advisor-mcp/README.md)
 - [Cross-client integration status](policy-advisor-mcp/integrations/README.md)
 
-The [completed 36-run comparison](docs/simple-design-results.md) found joint
-functional/security success in 7/9 baseline runs and 9/9 runs in each harness
-condition. Both baseline failures involved archive extraction through existing
-symlinks; one external repair succeeded. This is a small development pilot,
-not evidence of general security improvement. Codex, Claude Code, and SWE-agent
-integrations have not yet been verified end to end.
+The [SecRepoBench task 59438 report](docs/secrepobench-59438-results.md) records
+the current development comparison and evaluator qualification. Repository runs
+allow 60 SDK iterations for Baseline and Advisor-only. Verification-only and Full
+allow 60 initial iterations plus at most one 60-iteration repair (120 total).
+Time budgets remain 600 seconds per condition, split 300+300 for repair arms. Advisor-only receives policies in a read-only file.
+Shell time/output limit failures return recoverable observations to the agent.
+The advisor now uses server-indexed evidence references. The latest task 59438
+Advisor-only and Full rerun used the 60 / 60+60 iteration settings. Both conditions
+read the complete compact policy on every agent call and passed the hidden PoC, but
+both failed functional acceptance. The report retains the earlier partial-exposure
+comparison separately. This single-task result does not establish general security
+improvement; policy relevance remains for human review.
+Codex, Claude Code and SWE-agent integrations remain unverified end to end.
+
+The [ablation study plan](ablation-study/PLAN.md) specifies All-SCP and SCP-RAG
+as separate ablations of policy access. These conditions are planned, not implemented.
+
+The policy-guided condition without external repair is named **Advisor-only**
+(formerly Policy-only). Its stable code/result ID remains `policy` for compatibility
+with frozen protocols and artifact paths. It uses Advisor-selected SCPs and
+task-specific guidance; it is distinct from the planned All-SCP and SCP-RAG ablations.
 
 Historical reports and raw experiment results have been removed from the working
 tree. The benchmark source checkout, client configuration and current experiment's
-qualification, smoke evidence and completed comparison remain local under `.artifacts/`.
+qualification, control evidence and run records remain local under `.artifacts/`.
 Those files and virtual environments are excluded from Git. Use the harness
 instructions to create fresh evidence in a new clone.
 

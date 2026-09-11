@@ -7,6 +7,7 @@ from pathlib import Path
 import statistics
 
 from harness.contracts import Candidate, TaskSpec
+from harness.conditions import CONDITION_LABELS, condition_label
 from harness.experiments.simple import POLICY_PREFIX, REPAIR_PREFIX, load_manifest, summarize
 
 
@@ -174,6 +175,7 @@ def analyze(root):
             "coding_model": plan["coding_model"], "advisor_model": plan["advisor_model"], "ast_context": plan["ast_context"],
             "analyzer_sha256": digest(Path(__file__)), "input_sha256": raw_hashes,
             "arms": arms, "by_task": by_task, "contrasts": contrasts, "runs": details, "guidance": guidance,
+            "condition_labels": CONDITION_LABELS,
             "coding_cost_estimate": sum(r["sdk_cost_estimate"] for r in details),
             "advisor_unique_input_tokens": sum(g["input_tokens"] for g in guidance),
             "advisor_unique_output_tokens": sum(g["output_tokens"] for g in guidance),
@@ -191,16 +193,17 @@ def markdown(result, artifact):
     lines = ["# Simpler-design comparison", "", "Completed 36 scheduled runs: three tasks × three repetitions × four conditions. AST was disabled.",
              f"Coding model: `{result['coding_model']}`. Policy advisor: `{result['advisor_model']}`.",
              "Final scores were computed after generation and repair finished. All primary outcomes below were recomputed from candidate-bound verifier reports.", "",
+             "Advisor-only uses the stable condition ID `policy` in JSON and artifact paths.", "",
              "## Outcomes", "", "All outcome columns use nine planned slots per condition. Functional/security columns also require the agent to finish; incomplete candidates remain diagnostic.", "",
              "| Condition | Finished | Functional | Security | Joint success | Repairs / successful | SDK coding cost |", "| --- | ---: | ---: | ---: | ---: | ---: | ---: |"]
     for arm, a in result["arms"].items():
-        lines.append(f"| {arm} | {a['completed']}/9 | {a['completed_functional_pass']}/9 | {a['completed_security_pass']}/9 | {a['joint_pass']}/9 | {a['repairs']} / {a['successful_repairs']} | ${a['sdk_cost_estimate']:.4f} |")
-    lines += ["", "## Joint success by task", "", "| Task | Baseline | Policy | Verification | Full |", "| --- | ---: | ---: | ---: | ---: |"]
+        lines.append(f"| {condition_label(arm)} | {a['completed']}/9 | {a['completed_functional_pass']}/9 | {a['completed_security_pass']}/9 | {a['joint_pass']}/9 | {a['repairs']} / {a['successful_repairs']} | ${a['sdk_cost_estimate']:.4f} |")
+    lines += ["", "## Joint success by task", "", "| Task | Baseline | Advisor-only | Verification-only | Full |", "| --- | ---: | ---: | ---: | ---: |"]
     for task, arms in result["by_task"].items():
         lines.append("| " + task + " | " + " | ".join(f"{arms[a]['joint_pass']}/3" for a in ARMS) + " |")
     lines += ["", "## Paired comparisons", "", "| Treatment minus control | Wins | Losses | Ties | Joint difference |", "| --- | ---: | ---: | ---: | ---: |"]
     for c in result["contrasts"]:
-        lines.append(f"| {c['treatment']} − {c['control']} | {c['wins']} | {c['losses']} | {c['ties']} | {c['joint_success_difference_pp']:+.1f} pp |")
+        lines.append(f"| {condition_label(c['treatment'])} − {condition_label(c['control'])} | {c['wins']} | {c['losses']} | {c['ties']} | {c['joint_success_difference_pp']:+.1f} pp |")
     lines += ["", "These are descriptive differences across nine task/repetition pairs, not statistical significance estimates.", "",
               "## Failures and incomplete work", "", "| Run | Agent status | Final failed checks |", "| --- | --- | --- |"]
     for r in result["runs"]:
@@ -215,7 +218,7 @@ def markdown(result, artifact):
               "Each policy-bearing arm would incur those advisor tokens independently without sharing; actual cached requests were charged only once per pair. Advisor dollar cost is unknown.", "",
               "| Condition | Agent time | Median/run | Verifier time | Missing SDK cost calls |", "| --- | ---: | ---: | ---: | ---: |"]
     for arm, a in result["arms"].items():
-        lines.append(f"| {arm} | {a['agent_seconds']:.1f}s | {a['median_agent_seconds']:.1f}s | {a['verification_seconds']:.1f}s | {a['sdk_cost_missing_calls']} |")
+        lines.append(f"| {condition_label(arm)} | {a['agent_seconds']:.1f}s | {a['median_agent_seconds']:.1f}s | {a['verification_seconds']:.1f}s | {a['sdk_cost_missing_calls']} |")
     lines += ["", "## Scope and evidence", "", *["- " + item for item in result["limitations"]], "",
               f"Local artifacts: `{artifact}`. Machine-readable analysis, source/check hashes, per-run traces and candidate files remain there.",
               f"Execution manifest SHA-256: `{result['execution_sha256']}`.", ""]

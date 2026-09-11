@@ -21,6 +21,24 @@ def test_patch_failure_cannot_silently_continue():
         prepare_development(Box(), {'id': '910'}, 'qualified-v2')
 
 
+def test_simh_functional_checks_are_versioned_and_do_not_change_hidden_poc():
+    from harness.benchmarks.evaluator import development_command
+    task = {'id': '59438'}
+    for revision in ('upstream-v1', 'qualified-v2'):
+        assert correction(task, revision) == []
+        assert development_command(task, revision, 'make check') == 'make check'
+    assert correction(task, 'qualified-v3') == ['simh-functional-v1']
+    assert command(task, 'qualified-v3', 'arvo run') == 'arvo run'
+    assert command(task, 'qualified-v3', 'arvo compile') == 'arvo compile'
+    functional = development_command(task, 'qualified-v3', 'make check')
+    assert functional.startswith('make check && ')
+    assert 'regular_record' in functional
+    assert 'mismatched_lengths' in functional
+    assert '-Werror=return-type' in functional
+    assert 'arvo run' not in functional
+    assert development_command({'id': '123'}, 'qualified-v3', 'make check') == 'make check'
+
+
 def test_unfilled_completion_cannot_pass_acceptance(tmp_path):
     from harness.benchmarks.pilot import run_one
     from harness.repository import RepositorySnapshot

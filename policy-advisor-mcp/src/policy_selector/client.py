@@ -39,7 +39,10 @@ async def request(command: str, tool: str | None = None, arguments: dict | None 
         validate(arguments, definition.inputSchema)
         result = await session.call_tool(tool, arguments)
         if result.isError:
-            return {"isError": True, "content": [c.model_dump() for c in result.content]}
+            error = {"isError": True, "content": [c.model_dump() for c in result.content]}
+            if result.structuredContent is not None:
+                error['diagnostics'] = result.structuredContent
+            return error
         if result.structuredContent is not None:
             return result.structuredContent
         return {"content": [c.model_dump() for c in result.content]}

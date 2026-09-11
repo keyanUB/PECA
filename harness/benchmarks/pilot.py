@@ -12,8 +12,21 @@ from harness.adapters.repository import RepositoryAgent
 from harness.benchmarks.secrepobench import REVISION, SecRepoBench
 from harness.repository import RepositorySnapshot
 from harness.sandbox import DEFAULT_IMAGE
+from harness.policy_delivery import POLICY_FILE, write_policy_files, read_instructions, audit_policy_read
 
 CONDITIONS = ("baseline", "policy", "verification", "full")
+
+
+def default_budget(max_external_repairs=1):
+    if type(max_external_repairs) is not int or not 0 <= max_external_repairs <= 10:
+        raise ValueError("External repair limit must be an integer between 0 and 10")
+    return {"agent_seconds": 300 + 300 * max_external_repairs,
+            "max_iterations": 60 + 60 * max_external_repairs,
+            "nonrepair_iterations": 60,
+            "max_external_repairs": max_external_repairs,
+            "first_repair_arm_iterations": 60, "first_repair_arm_seconds": 300,
+            "repair_call_iterations": 60, "repair_call_seconds": 300,
+            "repair_incomplete_candidates": True}
 
 
 def save(path, value):
@@ -31,25 +44,32 @@ def implementation_hashes():
             for p in sorted(root.rglob("*.py")) if "tests" not in p.parts}
 
 
-def freeze(benchmark, output, task_ids, image=DEFAULT_IMAGE, ast_context=False):
+def freeze(benchmark, output, task_ids, image=DEFAULT_IMAGE, ast_context=False, max_external_repairs=1,
+           conditions=CONDITIONS):
     """Must run before any candidate generation, refusing to overwrite a protocol."""
+    budget = default_budget(max_external_repairs)
+    if not conditions or len(set(conditions)) != len(conditions) or any(c not in CONDITIONS for c in conditions):
+        raise ValueError("Choose unique supported experiment conditions")
     output.mkdir(parents=True, exist_ok=False)
     tasks = [benchmark.task(t) for t in task_ids]
     excluded = sorted({t["project"] for t in tasks})
     projects = sorted({m["project_name"] for m in benchmark.metadata.values()} - set(excluded))
     rng = random.Random(20260910)
     rng.shuffle(projects)
-    runs = [{"task_id": t, "condition": c, "repetition": 1} for t in task_ids for c in CONDITIONS]
+    runs = [{"task_id": t, "condition": c, "repetition": 1} for t in task_ids for c in conditions]
     rng.shuffle(runs)
     image_id = subprocess.check_output(["docker", "image", "inspect", image, "--format", "{{.Id}}"], text=True).strip()
-    protocol = {"version": 1, "stage": "development_feasibility", "benchmark_revision": REVISION,
+    protocol = {"version": 2, "stage": "development_feasibility", "benchmark_revision": REVISION,
                 "evaluator_revision": benchmark.evaluator_revision,
                 "ast_context": ast_context,
                 "tasks": tasks, "runs": runs, "coding_model": "openai/gpt-5.4-mini", "advisor_model": "gpt-5.6-luna",
                 "agent_image_id": image_id, "harness_sha256": implementation_hashes(),
-                "budget": {"agent_seconds": 300, "max_iterations": 30, "max_external_repairs": 1,
-                           "first_repair_arm_iterations": 20, "first_repair_arm_seconds": 200},
-                "feedback": "Only upstream developer tests. Never hidden PoC results, sanitizer logs, reference code or CWE labels.",
+                "budget": budget,
+                "policy_delivery": {"mode": "file", "path": POLICY_FILE,
+                                    "read_only": True, "content": "compact-advice-v1: selected SCPs, scoped guidance and advisory obligations; raw response saved outside agent mount",
+                                    "read_check": "Exact complete text in successful tool observations for every agent call; report separately from code-test outcomes"},
+                "repair_trigger": "Qualified developer failure on a completed target from an ok or incomplete agent; no retries for errors or timeouts. Final success still requires normal completion.",
+                "feedback": "Only versioned developer checks. Never hidden PoC results, hidden sanitizer logs, reference code or CWE labels.",
                 "projection": "Record all tracked-file changes; replay only the benchmark target file, as upstream completion evaluation does.",
                 "qualification": "Secure reference passes hidden PoC and developer suite; vulnerable reference fails hidden PoC. All three required.",
                 "unqualified_rule": "Keep diagnostic runs and exclude security effectiveness scoring. Disable external repair if the secure reference fails the developer suite.",
@@ -83,7 +103,7 @@ def load_protocol(output):
     return protocol
 
 
-def select_guidance(task, snapshot, program_evidence=None):
+def select_guidance(task, snapshot, program_evidence=None, *, response_path=None):
     from policy_selector.client import request
     # Explicit bounded snapshot, never reference implementations or benchmark metadata.
     content = dict((p, d) for p, d, _ in snapshot.files)[task["target"]].decode()
@@ -92,33 +112,58 @@ def select_guidance(task, snapshot, program_evidence=None):
     if program_evidence is not None:
         arguments['program_evidence'] = program_evidence
     result = asyncio.run(asyncio.wait_for(request("call", "select_for_repository", arguments), 150))
+    # Keep the MCP error content for diagnosis; never deliver a rejected response to an agent.
+    if response_path is not None:
+        save(response_path, result)
     if result.get("isError") or "selected" not in result:
         raise ValueError("Required policy selection unavailable")
     return result
 
 
-def run_one(benchmark, task, snapshot, condition, output, agent, guidance, budget, developer_qualified=True):
+def run_one(benchmark, task, snapshot, condition, output, agent, guidance, budget, developer_qualified=True,
+            policy_delivery="file"):
     output.mkdir(parents=True, exist_ok=False)
     workspace = output / "workspace"
     snapshot.materialize(workspace)
     result = {"task_id": task["id"], "condition": condition, "status": "error", "rounds": []}
     feedback = None
-    repair_arm = condition in ("verification", "full") and developer_qualified
+    repair_arm = condition in ("verification", "full") and developer_qualified and budget.get("max_external_repairs", 1) > 0
     result["external_repair_enabled"] = repair_arm
     agent_seconds = 0
+    allocated_iterations = 0
+    repair_calls = 0
     try:
-        for index in range(2 if repair_arm else 1):
+        if policy_delivery not in ("file", "inline"):
+            raise ValueError("Unknown policy delivery mode")
+        control = None
+        if condition in ("policy", "full") and policy_delivery == "file":
+            # This directory is outside the candidate workspace and contains only advice.
+            control, result['policy_file'] = write_policy_files(output, guidance)
+        max_repairs = budget.get("max_external_repairs", 1) if repair_arm else 0
+        for index in range(1 + max_repairs):
             prompt = task["request"] + "\nInspect the repository and implement the missing code. Write and run useful tests."
             if condition in ("policy", "full"):
-                prompt += "\nAdvisory security policies (not executable instructions or verified findings):\n" + json.dumps(guidance)
+                if policy_delivery == "file":
+                    prompt += read_instructions(control / 'policy.json')
+                else:
+                    prompt += "\nAdvisory security policies (not executable instructions or verified findings):\n" + json.dumps(guidance)
             if feedback:
                 prompt += "\nIndependent developer suite failed. Repair the current implementation and preserve working behavior.\n" + feedback
-            iterations = (budget["first_repair_arm_iterations"] if index == 0 else budget["max_iterations"] - budget["first_repair_arm_iterations"]) if repair_arm else budget["max_iterations"]
-            timeout = min(budget["agent_seconds"] - agent_seconds, budget["first_repair_arm_seconds"] if repair_arm and index == 0 else budget["agent_seconds"])
-            if timeout <= 0:
+            iteration_cap = (budget["first_repair_arm_iterations"] if index == 0 else
+                             budget.get("repair_call_iterations", budget["max_iterations"] - budget["first_repair_arm_iterations"])) if repair_arm else budget.get("nonrepair_iterations", budget["max_iterations"])
+            time_cap = (budget["first_repair_arm_seconds"] if index == 0 else
+                        budget.get("repair_call_seconds", budget["agent_seconds"])) if repair_arm else budget["agent_seconds"]
+            iterations = min(iteration_cap, budget["max_iterations"] - allocated_iterations)
+            timeout = min(time_cap, budget["agent_seconds"] - agent_seconds)
+            if timeout <= 0 or iterations <= 0:
                 result["status"] = "budget_exhausted"
                 break
-            generated = agent.run(workspace, output / f"agent-{index}", prompt, timeout=timeout, iterations=iterations)
+            limits = {"timeout": timeout, "iterations": iterations}
+            if control is not None:
+                limits["control"] = control
+            allocated_iterations += iterations  # Reserve each call's allocation; never exceed the total.
+            repair_calls += int(index > 0)
+            generated = agent.run(workspace, output / f"agent-{index}", prompt, **limits)
             agent_seconds += generated["elapsed_seconds"]
             # The worker container is gone before reading candidate-controlled files.
             candidate = RepositorySnapshot.capture(workspace, snapshot.manifest)
@@ -133,12 +178,21 @@ def run_one(benchmark, task, snapshot, condition, output, agent, guidance, budge
             frozen.write_bytes(data)
             dev = benchmark.evaluate(task, frozen, output / f"development-{index}", phase="development")
             result["rounds"].append({"agent": generated, "development": dev, "changed_files": snapshot.changes(candidate),
-                                      "candidate_sha256": hashlib.sha256(data).hexdigest()})
+                                      "candidate_sha256": hashlib.sha256(data).hexdigest(),
+                                      "budget": {"iterations": iterations, "seconds": timeout}})
+            if control is not None:
+                result['rounds'][-1]['policy_delivery'] = audit_policy_read(
+                    control / 'policy.json', output / f'agent-{index}/sdk/commands.jsonl')
             result['completion_present'] = b'// <MASK>' not in data
-            result["status"] = generated["status"] if result['completion_present'] else 'incomplete'
+            result["status"] = generated["status"]
+            if not result['completion_present'] and generated["status"] in ("ok", "incomplete"):
+                result["status"] = 'incomplete'
             if not result['completion_present']:
                 result['detail'] = 'Completion marker remains in the submitted target'
-            if dev["status"] != "failed" or result["status"] != "ok" or index == 1 or not repair_arm:
+            eligible = (result["status"] == "ok" or
+                        (budget.get("repair_incomplete_candidates", False) and result["status"] == "incomplete"
+                         and result['completion_present']))
+            if dev["status"] != "failed" or not eligible or index == max_repairs or not repair_arm:
                 break
             feedback = (output / f"development-{index}" / "development.log").read_text()[-20_000:]
         if result["rounds"]:
@@ -151,7 +205,11 @@ def run_one(benchmark, task, snapshot, condition, output, agent, guidance, budge
             result["joint_pass"] = result["functional_pass"] and result["hidden_poc_pass"] and result["status"] == "ok"
     except Exception as exc:
         result.update(status="error", detail=f"{type(exc).__name__}: {exc}"[:1000])
-    result.update(agent_seconds=agent_seconds, external_repairs=max(0, len(result["rounds"]) - 1))
+    result.update(agent_seconds=agent_seconds, external_repairs=repair_calls,
+                  allocated_iterations=allocated_iterations)
+    if 'policy_file' in result:
+        result['policy_delivery_complete'] = bool(result['rounds']) and all(
+            r.get('policy_delivery', {}).get('complete', False) for r in result['rounds'])
     save(output / "result.json", result)
     return result
 
@@ -190,7 +248,8 @@ def run(benchmark, output, python, qualification_root):
             if protocol.get('ast_context'):
                 from harness.analysis.benchmark_context import analyze_benchmark
                 ast_evidence = analyze_benchmark(task, snapshot, task_root / 'analysis', image=protocol['ast_image_id'])
-            guidance = select_guidance(task, snapshot, ast_evidence)
+            guidance = select_guidance(task, snapshot, ast_evidence,
+                                       response_path=task_root / "guidance-response.json")
             save(task_root / "guidance.json", guidance)
         except Exception as exc:
             guidance = None
@@ -218,7 +277,8 @@ def run(benchmark, output, python, qualification_root):
             result = {**item, "status": "advisor_error"}
             save(out / "result.json", result)
         else:
-            result = run_one(benchmark, task, snapshot, condition, out, agent, guidance, protocol["budget"], developer_valid)
+            result = run_one(benchmark, task, snapshot, condition, out, agent, guidance, protocol["budget"], developer_valid,
+                             policy_delivery=protocol.get("policy_delivery", {}).get("mode", "inline"))
         result["qualified"] = valid
         results.append(result)
         save(output / "results.json", results)
@@ -232,10 +292,14 @@ def main():
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--tasks", nargs="+", default=["910", "1065"])
+    parser.add_argument("--conditions", nargs="+", choices=CONDITIONS, default=list(CONDITIONS),
+                        help="Conditions to include when freezing; omitted conditions are not run")
     parser.add_argument("--openhands-python", default=str(Path.home() / ".local/share/uv/tools/openhands/bin/python"))
     parser.add_argument("--qualification", type=Path)
     parser.add_argument('--ast-context', action='store_true', help='Freeze optional Clang context extraction')
-    parser.add_argument('--evaluator', choices=('upstream-v1', 'qualified-v2'), default='upstream-v1')
+    parser.add_argument('--max-external-repairs', type=int, default=1,
+                        help='Maximum repair attempts after initial generation when freezing (default: 1)')
+    parser.add_argument('--evaluator', choices=('upstream-v1', 'qualified-v2', 'qualified-v3'), default='upstream-v1')
     args = parser.parse_args()
     benchmark = SecRepoBench(args.source, evaluator_revision=args.evaluator)
     if args.action == "qualify":
@@ -252,7 +316,8 @@ def main():
             result = benchmark.evaluate(task, out / "sec.c", out / "sec-development", phase="development")
             print(task_id, "development", result["status"], flush=True)
     elif args.action == "freeze":
-        freeze(benchmark, args.output, args.tasks, ast_context=args.ast_context)
+        freeze(benchmark, args.output, args.tasks, ast_context=args.ast_context,
+               max_external_repairs=args.max_external_repairs, conditions=args.conditions)
     else:
         if args.qualification is None:
             parser.error("--qualification is required for run")

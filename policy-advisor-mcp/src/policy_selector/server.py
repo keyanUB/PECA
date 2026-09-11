@@ -4,11 +4,12 @@ from pathlib import Path
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
+from mcp.types import CallToolResult, TextContent
 
 from .catalog import Catalog
 from .models import CodeFile, PreviousPolicy, SecurityContext, ProgramEvidence
 from .repository import collect_repository
-from .selector import Selector
+from .selector import Selector, SelectionFailure
 
 
 def build_server(host="127.0.0.1", port=8765):
@@ -17,6 +18,13 @@ def build_server(host="127.0.0.1", port=8765):
     allowed_root = Path(os.getenv("POLICY_SELECTOR_REPO_ROOT", os.getcwd())).resolve()
     mcp = FastMCP("policy-advisor", host=host, port=port,
                   instructions="Select OWASP SCPs before coding; refine selection after code generation.")
+
+    async def select(*args, **kwargs):
+        try:
+            return await selector.select(*args, **kwargs)
+        except SelectionFailure as exc:
+            return CallToolResult(isError=True, structuredContent=exc.diagnostics,
+                                  content=[TextContent(type="text", text=str(exc))])
 
     @mcp.tool()
     def policy_catalog() -> dict[str, Any]:
@@ -29,7 +37,7 @@ def build_server(host="127.0.0.1", port=8765):
         """Select relevant SCPs. Optional security_context or propose_obligations
         adds advisory verification obligations; no checks are executed.
         """
-        return await selector.select("task", task, security_context=security_context,
+        return await select("task", task, security_context=security_context,
                                      propose_obligations=propose_obligations)
 
     @mcp.tool()
@@ -63,7 +71,7 @@ def build_server(host="127.0.0.1", port=8765):
             coverage["mode"] = "server_filesystem"
         if not code:
             raise ValueError("No readable source files found in the repository selection")
-        return await selector.select("repository", task, code, coverage=coverage,
+        return await select("repository", task, code, coverage=coverage,
                                      security_context=security_context, propose_obligations=propose_obligations,
                                      program_evidence=program_evidence)
 
@@ -81,7 +89,7 @@ def build_server(host="127.0.0.1", port=8765):
         """
         if not generated_code or not any(f.content.strip() for f in generated_code):
             raise ValueError("Provide nonempty generated code for refinement")
-        return await selector.select("refinement", task, generated_code, previous_selection,
+        return await select("refinement", task, generated_code, previous_selection,
                                      security_context=security_context, propose_obligations=propose_obligations,
                                      program_evidence=program_evidence)
 

@@ -167,32 +167,24 @@ the repair function. A passing final security subset alone is not joint success.
 The matrix reuses the SDK adapter and verifier, not the old host-executing Python
 comparison script. Historical one-off schema, refinement and duplicate fixture
 helpers and historical reports were removed from the working tree. Previously
-committed files remain in Git history. Only the current protocol, qualification,
-smoke evidence and current comparison results are retained locally. Final verification
+committed files remain in Git history. Only current repository protocols, qualification, control evidence, and run
+records are retained locally. Final verification
 still assumes cooperative generated code rather than an adversarial candidate
 trying to tamper with its in-process evaluator.
 
-Implementation validation on 2026-09-10 passed all 78 control/suite runs. The
-current live MCP smoke completed one OpenHands repair in 37.8 seconds; this is
-integration evidence, not a security-effectiveness result. Qualification is saved
-under `.artifacts/simple-design-qualification-20260910-r2`, the live smoke under
-`.artifacts/simple-design-live-smoke-20260910-r4`, and the validated execution freeze
-under `.artifacts/simple-design-execution`. Historical run artifacts and earlier
-setup attempts have been removed. All 36 generation runs and final evaluations
-are complete. The [results and case analysis](../docs/simple-design-results.md)
-report 7/9 baseline joint successes versus 9/9 in each harness condition, including
-one successful external repair. The small pilot does not establish general
-security improvement or an advantage for combining both harness components.
+Historical Python comparison reports and raw runs have been removed. The reusable
+runner, fixtures, protocol and analyzer remain available. The current repository
+experiment is documented in the [task 59438 report](../docs/secrepobench-59438-results.md).
 
-Recompute the statistical tables and validate saved evidence without model calls:
+After producing a fresh Python comparison, validate its saved evidence and export
+statistical tables without new model calls:
 
 ```bash
 .venv/bin/python -m scripts.analyze_simple_comparison \
-  .artifacts/simple-design-execution --report /tmp/peca-comparison-tables.md
+  .artifacts/YOUR-EXECUTION --report /tmp/peca-comparison-tables.md
 ```
 
 This checks the frozen manifest, prompts, candidate hashes, and verifier reports.
-The committed report also includes a manually reviewed interpretation.
 The audit requires the frozen runtime's effective model metadata. If the SDK
 cannot fetch its price map and falls back to different bundled metadata, the
 model-settings fingerprint check can fail; restore network access and retry.

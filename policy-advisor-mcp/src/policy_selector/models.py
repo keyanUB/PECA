@@ -89,6 +89,24 @@ class AdvisorySelection(Selection):
     obligations: list[Obligation] = Field(max_length=30)
 
 
+class SourceReferencedDecision(Decision):
+    evidence: list[str] = Field(min_length=1, max_length=10,
+                               description="IDs from the supplied source_fragments; never quotes")
+
+
+class SourceReferencedObligation(Obligation):
+    evidence: list[str] = Field(min_length=1, max_length=10,
+                               description="IDs from the supplied source_fragments; never quotes")
+
+
+class SourceReferencedSelection(Selection):
+    selected: list[SourceReferencedDecision]
+
+
+class SourceReferencedAdvisorySelection(SourceReferencedSelection):
+    obligations: list[SourceReferencedObligation] = Field(max_length=30)
+
+
 class ProgramFact(StrictModel):
     id: str = Field(min_length=1, max_length=100)
     kind: Literal['function', 'parameter', 'variable', 'call', 'operator', 'branch',

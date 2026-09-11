@@ -91,8 +91,9 @@ Refinement example (use IDs returned by selection):
 
 Results include canonical policy text and source URL, rationale, scoped guidance,
 exact task/file evidence, catalog SHA-256, requested/returned model names, provider
-response ID, and usage. `attempts` records every API response and its usage,
-including a correction attempt; top-level `usage` is the final response's usage.
+response ID, and usage. `attempts` records each model request, its outcome and any
+available usage, including the correction attempt; top-level `usage` is the final
+response's usage. Missing response/usage fields are `null`, never a zero-cost claim.
 
 Refinement marks selected items `retained` or `added`, and lists `removed` items
 separately. Assessment can be `satisfied`, `gap`, or `uncertain`; initial selection
@@ -100,6 +101,49 @@ uses `applicable` or `uncertain`. Satisfying a control does not remove its appli
 Every previous policy must be accounted for. Unknown IDs and fabricated evidence
 are rejected, with at most one LLM correction attempt. API errors have no automatic
 retry or model fallback.
+
+## Evidence binding and failure diagnostics
+
+Without optional AST input, the server deterministically splits the task and source
+files into fragments of at most 480 characters, preferring newline boundaries.
+Whitespace-only fragments are omitted. The model receives indexed source text once
+and returns fragment IDs for each policy and obligation. The server checks those
+IDs against this request's index and extracts the source/quote itself. Unknown or
+duplicate IDs are rejected; an invalid selection receives at most one correction.
+There is no automatic partial acceptance of a rejected selection.
+
+MCP input arguments and public `evidence: [{source, quote}]` remain compatible.
+An additive `evidence_binding` field records the indexing version and original
+source SHA-256 values. IDs are request-local and must not be reused across requests.
+This is source binding, not RAG, AST analysis, proof of relevance, or a security
+verification. The optional AST path retains its existing fact-reference interface.
+Human review of relevance, sufficiency, omissions and excessive selection is planned;
+it does not currently alter the policies sent to agents.
+
+Model/validation failures return standard MCP `isError=true` plus structured
+`error`, `attempts`, and binding metadata. Rejected parsed outputs and precise
+reference errors are retained. The generic client exposes this under `diagnostics`
+while retaining the MCP text error. The repository runner saves the complete MCP
+response in `guidance-response.json` before deciding whether it can start an arm.
+These diagnostics can contain model output derived from the submitted source.
+Provider error bodies and credentials are not copied into API-failure diagnostics.
+If SDK parsing fails before a response is exposed, its output and usage may be
+unavailable; transport cancellation can also prevent a diagnostic response.
+
+A bounded real-model selection and OpenHands file-read check for task 59438:
+
+```bash
+.venv/bin/python -m scripts.check_repository_advisor \
+  --source .artifacts/sources/SecRepoBench \
+  --output .artifacts/NEW-ADVISOR-SMOKE --task 59438
+```
+
+This makes one MCP selection call (up to two model attempts) and gives OpenHands
+at most six steps to read the complete compact policy document with the standalone
+`cat /peca-control/policy.json` command, without a configured read-length cutoff. It records the frozen runtime, input, raw selection, usage and command
+trace. Read coverage requires complete text in tool observations; a file hash alone
+does not pass. Raw audit details are saved outside the agent's policy mount. It does not implement the task
+or evaluate generated-code security; use a new output directory for each run.
 
 ## Use with OpenHands
 

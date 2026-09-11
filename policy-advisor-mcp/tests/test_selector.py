@@ -4,11 +4,20 @@ from unittest.mock import AsyncMock
 import pytest
 
 from policy_selector.catalog import Catalog
-from policy_selector.models import CodeFile, Decision, Evidence, PreviousPolicy, Selection
-from policy_selector.selector import Selector
+from policy_selector.models import (AdvisorySelection, CodeFile, Decision, Evidence, PreviousPolicy,
+                                    Selection, SourceReferencedSelection, SourceReferencedAdvisorySelection)
+from policy_selector.selector import Selector, SelectionFailure
 
 
 def response(selection):
+    # Legacy fixtures describe public evidence; the model now returns IDs for those inputs.
+    if type(selection) in (Selection, AdvisorySelection):
+        data = selection.model_dump()
+        for item in data['selected'] + data.get('obligations', []):
+            item['evidence'] = ['e0001' if e['source'] == 'task' and e['quote'] == 'Use SQLite'
+                                else 'unknown' for e in item['evidence']]
+        model = SourceReferencedAdvisorySelection if 'obligations' in data else SourceReferencedSelection
+        selection = model.model_validate(data)
     return SimpleNamespace(output_parsed=selection, status="completed", model="gpt-5.6-luna",
                            id="test-response", usage=None)
 
@@ -28,7 +37,8 @@ async def test_output_uses_catalog_text_and_tracks_model():
     assert result["selected"][0]["policy"] == catalog.policies[policy_id].model_dump()
     assert result["response_model"] == "gpt-5.6-luna"
     assert "obligations" not in result and "security_context" not in result
-    assert client.responses.parse.call_args.kwargs["text_format"] is Selection
+    assert client.responses.parse.call_args.kwargs["text_format"] is SourceReferencedSelection
+    assert result['selected'][0]['evidence'] == [{'source': 'task', 'quote': 'Use SQLite'}]
     assert client.responses.parse.call_args.kwargs["store"] is False
 
 
@@ -87,6 +97,6 @@ async def test_repair_is_bounded_and_never_accepts_invalid_output():
     invalid = Selection(summary="", selected=[decision(next(iter(catalog.policies)), "invented")],
                         removed=[], limitations=[])
     parse = AsyncMock(return_value=response(invalid))
-    with pytest.raises(ValueError, match="evidence"):
+    with pytest.raises(SelectionFailure, match="evidence"):
         await Selector(catalog, SimpleNamespace(responses=SimpleNamespace(parse=parse))).select("task", "Use SQLite")
     assert parse.call_count == 2
