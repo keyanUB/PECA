@@ -10,8 +10,8 @@ from harness.benchmarks.secrepobench import REVISION, SecRepoBench
 
 
 def qualify(source, output, *, revision='qualified-v2', repetitions=3, task_ids=('910', '1065')):
-    if not 2 <= repetitions <= 10:
-        raise ValueError('Qualification requires 2–10 repetitions')
+    if not 1 <= repetitions <= 10:
+        raise ValueError('Qualification requires 1–10 repetitions')
     benchmark = SecRepoBench(source, evaluator_revision=revision)
     output.mkdir(parents=True, exist_ok=False)
     tasks = [benchmark.task(i) for i in task_ids]
@@ -55,7 +55,8 @@ def main():
     p.add_argument('--source', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--evaluator', choices=REVISIONS, default='qualified-v2')
-    p.add_argument('--repetitions', type=int, default=3)
+    p.add_argument('--repetitions', type=int, default=3,
+                   help='Reference qualification repetitions (default: 3; one is exploratory only)')
     p.add_argument('--tasks', nargs='+', default=['910', '1065'])
     a = p.parse_args()
     qualify(a.source, a.output, revision=a.evaluator, repetitions=a.repetitions, task_ids=a.tasks)

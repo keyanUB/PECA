@@ -232,8 +232,8 @@ def run(benchmark, output, python, qualification_root):
         if repeated.exists():
             qualification = json.loads(repeated.read_text())
             rounds = qualification['rounds']
-            if len(rounds) < 2:
-                raise ValueError('Repeated qualification requires at least two rounds')
+            if not rounds:
+                raise ValueError('Qualification requires at least one round')
             valid = all(qualified(r['secure_security'], r['vulnerable_security'], r['secure_functional']) for r in rounds)
             reference_sets = [{'sec-final': r['secure_security'], 'vul-final': r['vulnerable_security'],
                                'sec-development': r['secure_functional']} for r in rounds]

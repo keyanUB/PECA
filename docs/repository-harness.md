@@ -189,9 +189,9 @@ complete-read delivery. It does not revise the earlier frozen results.
 ## Research status
 
 The adapter accepts SecRepoBench projects that have a developer command in the
-pinned benchmark source. Each task still requires repeated reference qualification
-before generation; adapter acceptance alone is not evidence that its developer and
-hidden checks are reliable in the local runtime.
+pinned benchmark source. Each task still requires reference qualification before
+generation; adapter acceptance alone is not evidence that its developer and hidden
+checks are reliable in the local runtime.
 Repository qualification and evaluation allow 1,200 seconds for project builds and
 developer suites, matching the upstream agent harness ceiling, and 60 seconds for
 the compiled exploit run. These limits are recorded in qualification plans and
@@ -199,6 +199,9 @@ frozen generation protocols.
 Evaluation containers use 4 CPUs, 8 GB memory, and up to 1,024 processes so larger
 C/C++ projects can build under sanitizers. Agent containers retain their separate
 2 CPU, 2 GB, 256-process limits. Evaluation resources are also frozen and checked.
+The qualification CLI accepts one to ten rounds and defaults to three. A one-round
+qualification is suitable only for exploratory screening and must be reported as
+such; it does not establish repeatability.
 
 The [task 59438 comparison](secrepobench-59438-results.md) records all four outcomes,
 reused control provenance and evaluator qualification. Use `--tasks 59438 --evaluator
