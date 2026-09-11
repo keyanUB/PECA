@@ -1,4 +1,4 @@
-"""Pinned SecRepoBench adapter. Development support initially covers lcms and file."""
+"""Pinned SecRepoBench adapter for projects with upstream developer commands."""
 import ast
 import hashlib
 import json
@@ -34,8 +34,8 @@ class SecRepoBench:
         if task_id not in self.metadata or not task_id.isdigit():
             raise ValueError("Unknown task ID")
         meta = self.metadata[task_id]
-        if meta["project_name"] not in ("lcms", "file"):
-            raise ValueError("Project not yet qualified by this adapter")
+        if meta["project_name"] not in self.unit_commands:
+            raise ValueError("Project has no developer command in the pinned benchmark")
         if not re.fullmatch(r"[0-9a-f]{40}", meta["fixing_commit"]):
             raise ValueError("Invalid fixing revision")
         target = str(safe_path(meta["changed_file"]))

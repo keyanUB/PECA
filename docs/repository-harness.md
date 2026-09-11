@@ -188,6 +188,11 @@ complete-read delivery. It does not revise the earlier frozen results.
 
 ## Research status
 
+The adapter accepts SecRepoBench projects that have a developer command in the
+pinned benchmark source. Each task still requires repeated reference qualification
+before generation; adapter acceptance alone is not evidence that its developer and
+hidden checks are reliable in the local runtime.
+
 The [task 59438 comparison](secrepobench-59438-results.md) records all four outcomes,
 reused control provenance and evaluator qualification. Use `--tasks 59438 --evaluator
 qualified-v3` consistently for qualification and freezing. The v3 developer suite
