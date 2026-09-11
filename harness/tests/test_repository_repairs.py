@@ -166,6 +166,11 @@ def test_freeze_records_one_repair_and_file_delivery(tmp_path, monkeypatch):
 
     class Benchmark:
         evaluator_revision = "qualified-v3"
+        evaluation_limits = {
+            "development_seconds": 1200,
+            "final_build_seconds": 1200,
+            "final_exploit_seconds": 60,
+        }
         metadata = {"t": {"project_name": "file"}}
 
         def task(self, task_id):

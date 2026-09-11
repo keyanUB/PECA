@@ -61,6 +61,7 @@ def freeze(benchmark, output, task_ids, image=DEFAULT_IMAGE, ast_context=False, 
     image_id = subprocess.check_output(["docker", "image", "inspect", image, "--format", "{{.Id}}"], text=True).strip()
     protocol = {"version": 2, "stage": "development_feasibility", "benchmark_revision": REVISION,
                 "evaluator_revision": benchmark.evaluator_revision,
+                "evaluation_limits": benchmark.evaluation_limits,
                 "ast_context": ast_context,
                 "tasks": tasks, "runs": runs, "coding_model": "openai/gpt-5.4-mini", "advisor_model": "gpt-5.6-luna",
                 "agent_image_id": image_id, "harness_sha256": implementation_hashes(),
@@ -218,6 +219,8 @@ def run(benchmark, output, python, qualification_root):
     protocol = load_protocol(output)
     if benchmark.evaluator_revision != protocol.get('evaluator_revision', 'upstream-v1'):
         raise ValueError('Evaluator revision does not match frozen protocol')
+    if benchmark.evaluation_limits != protocol.get('evaluation_limits'):
+        raise ValueError('Evaluation limits do not match frozen protocol')
     agent = RepositoryAgent(python, protocol["coding_model"], protocol["agent_image_id"])
     prepared = {}
     for task in protocol["tasks"]:
