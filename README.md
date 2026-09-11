@@ -72,18 +72,20 @@ Existing users should follow the [rename migration guide](policy-advisor-mcp/MIG
 - [policy-advisor installation and tools](policy-advisor-mcp/README.md)
 - [Cross-client integration status](policy-advisor-mcp/integrations/README.md)
 
-The [SecRepoBench task 59438 report](docs/secrepobench-59438-results.md) records
-the current development comparison and evaluator qualification. Repository runs
+The [multitask SecRepoBench report](docs/secrepobench-multitask-results.md) records
+the current requested-task screening and qualified comparison. The earlier
+[task 59438 report](docs/secrepobench-59438-results.md) remains a separate development
+study. Repository runs
 allow 60 SDK iterations for Baseline and Advisor-only. Verification-only and Full
 allow 60 initial iterations plus at most one 60-iteration repair (120 total).
 Time budgets remain 600 seconds per condition, split 300+300 for repair arms. Advisor-only receives policies in a read-only file.
 Shell time/output limit failures return recoverable observations to the agent.
-The advisor now uses server-indexed evidence references. The latest task 59438
-Advisor-only and Full rerun used the 60 / 60+60 iteration settings. Both conditions
-read the complete compact policy on every agent call and passed the hidden PoC, but
-both failed functional acceptance. The report retains the earlier partial-exposure
-comparison separately. This single-task result does not establish general security
-improvement; policy relevance remains for human review.
+The advisor now uses server-indexed evidence references. In the latest screening,
+2 of 13 requested tasks passed the current reference qualification gate and entered
+an eight-run comparison. All candidates passed functionality. Task 9922 passed its
+hidden PoC in every condition; task 57656 passed only in Verification-only, where no
+repair occurred. All policy-enabled calls read the complete compact policy. This
+small exploratory result does not establish an Advisor or verifier benefit.
 Codex, Claude Code and SWE-agent integrations remain unverified end to end.
 
 The [ablation study plan](ablation-study/PLAN.md) specifies All-SCP and SCP-RAG

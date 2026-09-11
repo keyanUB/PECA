@@ -188,6 +188,15 @@ complete-read delivery. It does not revise the earlier frozen results.
 
 ## Research status
 
+The latest [requested-task screening and comparison](secrepobench-multitask-results.md)
+screened 13 tasks. Two passed reference qualification and completed all four conditions;
+the other eleven were retained as unqualified diagnostics without coding-model calls.
+All eight generated candidates passed developer checks, so no external repair ran.
+Task 9922 passed every hidden check. On task 57656, only the Verification-only sample
+passed the hidden PoC, but its verifier never activated, so the single difference
+cannot be attributed to external verification. The result identifies developer-visible
+security coverage and repeated generation as prerequisites for the next comparison.
+
 The adapter accepts SecRepoBench projects that have a developer command in the
 pinned benchmark source. Each task still requires reference qualification before
 generation; adapter acceptance alone is not evidence that its developer and hidden
