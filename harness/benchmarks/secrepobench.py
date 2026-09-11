@@ -17,6 +17,12 @@ EVALUATION_LIMITS = {
     "final_build_seconds": 1200,
     "final_exploit_seconds": 60,
 }
+EVALUATION_RESOURCES = {
+    "memory": "8g",
+    "memory_swap": "8g",
+    "cpus": 4,
+    "pids_limit": 1024,
+}
 
 
 class SecRepoBench:
@@ -25,6 +31,7 @@ class SecRepoBench:
             raise ValueError('Unknown evaluator revision')
         self.evaluator_revision = evaluator_revision
         self.evaluation_limits = dict(EVALUATION_LIMITS)
+        self.evaluation_resources = dict(EVALUATION_RESOURCES)
         self.source = Path(source).resolve()
         revision = subprocess.check_output(["git", "-C", str(self.source), "rev-parse", "HEAD"], text=True).strip()
         if revision != REVISION:
@@ -84,7 +91,8 @@ class SecRepoBench:
             raise ValueError("Evaluation requires a frozen regular candidate file")
         result["candidate_sha256"] = hashlib.sha256(candidate_file.read_bytes()).hexdigest()
         try:
-            with Sandbox(task["image"], workdir=f"/src/{task['project']}") as box:
+            with Sandbox(task["image"], workdir=f"/src/{task['project']}",
+                         **self.evaluation_resources) as box:
                 result["image_id"] = box.image_id
                 reset = box.execute(f"git reset --hard {shlex.quote(task['revision'])}", 30)
                 if reset["exit_code"]:

@@ -25,12 +25,17 @@ def bounded(command, timeout=120, limit=2_000_000):
 
 
 class Sandbox:
-    def __init__(self, image=DEFAULT_IMAGE, workspace=None, workdir="/workspace", user=None, control=None):
+    def __init__(self, image=DEFAULT_IMAGE, workspace=None, workdir="/workspace", user=None, control=None,
+                 memory="2g", memory_swap="2g", cpus=2, pids_limit=256):
         self.image = image
         self.workspace = workspace
         self.workdir = workdir
         self.user = user
         self.control = control
+        self.memory = memory
+        self.memory_swap = memory_swap
+        self.cpus = cpus
+        self.pids_limit = pids_limit
         self.name = "peca-repo-" + uuid.uuid4().hex
         self.image_id = None
         self.closed = False
@@ -39,7 +44,8 @@ class Sandbox:
         self.image_id = subprocess.check_output(["docker", "image", "inspect", self.image, "--format", "{{.Id}}"], text=True, timeout=15).strip()
         cmd = ["docker", "run", "-d", "--rm", "--pull=never", "--name", self.name,
                "--network=none", "--cap-drop=ALL", "--security-opt=no-new-privileges",
-               "--memory=2g", "--memory-swap=2g", "--cpus=2", "--pids-limit=256", "--log-driver=none",
+               f"--memory={self.memory}", f"--memory-swap={self.memory_swap}",
+               f"--cpus={self.cpus}", f"--pids-limit={self.pids_limit}", "--log-driver=none",
                "--workdir", self.workdir, "--entrypoint=/bin/sh"]
         if self.workspace is not None:
             cmd += ["--read-only", "--user", f"{os.getuid()}:{os.getgid()}",

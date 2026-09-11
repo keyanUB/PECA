@@ -171,6 +171,12 @@ def test_freeze_records_one_repair_and_file_delivery(tmp_path, monkeypatch):
             "final_build_seconds": 1200,
             "final_exploit_seconds": 60,
         }
+        evaluation_resources = {
+            "memory": "8g",
+            "memory_swap": "8g",
+            "cpus": 4,
+            "pids_limit": 1024,
+        }
         metadata = {"t": {"project_name": "file"}}
 
         def task(self, task_id):

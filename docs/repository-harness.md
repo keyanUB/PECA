@@ -196,6 +196,9 @@ Repository qualification and evaluation allow 1,200 seconds for project builds a
 developer suites, matching the upstream agent harness ceiling, and 60 seconds for
 the compiled exploit run. These limits are recorded in qualification plans and
 frozen generation protocols.
+Evaluation containers use 4 CPUs, 8 GB memory, and up to 1,024 processes so larger
+C/C++ projects can build under sanitizers. Agent containers retain their separate
+2 CPU, 2 GB, 256-process limits. Evaluation resources are also frozen and checked.
 
 The [task 59438 comparison](secrepobench-59438-results.md) records all four outcomes,
 reused control provenance and evaluator qualification. Use `--tasks 59438 --evaluator

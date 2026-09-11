@@ -62,6 +62,7 @@ def freeze(benchmark, output, task_ids, image=DEFAULT_IMAGE, ast_context=False, 
     protocol = {"version": 2, "stage": "development_feasibility", "benchmark_revision": REVISION,
                 "evaluator_revision": benchmark.evaluator_revision,
                 "evaluation_limits": benchmark.evaluation_limits,
+                "evaluation_resources": benchmark.evaluation_resources,
                 "ast_context": ast_context,
                 "tasks": tasks, "runs": runs, "coding_model": "openai/gpt-5.4-mini", "advisor_model": "gpt-5.6-luna",
                 "agent_image_id": image_id, "harness_sha256": implementation_hashes(),
@@ -221,6 +222,8 @@ def run(benchmark, output, python, qualification_root):
         raise ValueError('Evaluator revision does not match frozen protocol')
     if benchmark.evaluation_limits != protocol.get('evaluation_limits'):
         raise ValueError('Evaluation limits do not match frozen protocol')
+    if benchmark.evaluation_resources != protocol.get('evaluation_resources'):
+        raise ValueError('Evaluation resources do not match frozen protocol')
     agent = RepositoryAgent(python, protocol["coding_model"], protocol["agent_image_id"])
     prepared = {}
     for task in protocol["tasks"]:

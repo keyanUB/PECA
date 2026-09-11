@@ -19,6 +19,7 @@ def qualify(source, output, *, revision='qualified-v2', repetitions=3, task_ids=
         task['image'] = subprocess.check_output(['docker', 'image', 'inspect', task['image'], '--format', '{{.Id}}'], text=True).strip()
     plan = {'benchmark_revision': REVISION, 'evaluator_revision': revision, 'evaluator_sha256': fingerprint(),
             'evaluation_limits': benchmark.evaluation_limits,
+            'evaluation_resources': benchmark.evaluation_resources,
             'repetitions': repetitions, 'tasks': tasks,
             'rule': 'Every repetition: secure hidden and developer checks pass; vulnerable hidden check fails. No retries or omitted runs.'}
     (output / 'plan.json').write_text(json.dumps(plan, indent=2) + '\n')
